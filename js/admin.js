@@ -5,6 +5,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  onSnapshot,
   writeBatch,
   getDoc,
   setDoc,
@@ -18,9 +19,16 @@ import {
 // Change this password before deploying!
 const ADMIN_PASSWORD = "12345";
 
+// ===== CONSTANTS =====
+const TEAM_COLORS = ["#e94560", "#4fc3f7", "#81c784", "#ffb74d", "#ce93d8", "#80cbc4"];
+const TEAM_NAMES  = ["Lag 1", "Lag 2", "Lag 3", "Lag 4", "Lag 5", "Lag 6"];
+
 // ===== STATE =====
 let players = [];        // Array of { id, name, quizScore, liveScore }
 let pendingChanges = {}; // { userId: deltaLiveScore }
+let currentMode  = "leaderboard";
+let currentTeams = [];
+let selectedTeamCount = 2;
 
 // ===== DOM REFS =====
 const screenAuth = document.getElementById("screen-auth");
@@ -38,10 +46,17 @@ const playerTotalEl = document.getElementById("player-total");
 const tableBody = document.getElementById("users-table-body");
 const loadingOverlay = document.getElementById("loading-overlay");
 
-const addPlayerForm = document.getElementById("add-player-form");
+const addPlayerForm  = document.getElementById("add-player-form");
 const addPlayerInput = document.getElementById("add-player-name");
-const btnAddPlayer = document.getElementById("btn-add-player");
+const btnAddPlayer   = document.getElementById("btn-add-player");
 const addPlayerError = document.getElementById("add-player-error");
+
+const teamSetupEl      = document.getElementById("team-setup");
+const teamActiveEl     = document.getElementById("team-active");
+const teamPreviewGrid  = document.getElementById("team-preview-grid");
+const teamAwardCards   = document.getElementById("team-award-cards");
+const btnStartTeam     = document.getElementById("btn-start-team");
+const btnEndTeam       = document.getElementById("btn-end-team");
 
 // ===== SCREEN MANAGEMENT =====
 function showScreen(name) {
@@ -93,6 +108,7 @@ async function loadPlayers() {
     pendingChanges = {};
     renderTable(players);
     updatePendingBadge();
+    updateTeamModeUI();
   } catch (err) {
     console.error("Load error:", err);
     showStatus("Failed to load players. Check your Firebase config.", "error");
@@ -319,6 +335,179 @@ function hideStatus() {
 function setLoading(loading) {
   if (loadingOverlay) loadingOverlay.style.display = loading ? "block" : "none";
   if (tableBody && loading) tableBody.innerHTML = "";
+}
+
+// ===== TEAM MODE =====
+
+// Team count buttons
+document.querySelectorAll(".team-count-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".team-count-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedTeamCount = parseInt(btn.dataset.count);
+    renderTeamPreview();
+  });
+});
+
+if (btnStartTeam) btnStartTeam.addEventListener("click", startTeamMode);
+if (btnEndTeam)   btnEndTeam.addEventListener("click", endTeamMode);
+
+// Listen to meta/game so UI stays in sync across devices
+onSnapshot(doc(db, "meta", "game"), (snap) => {
+  const data = snap.exists() ? snap.data() : { mode: "leaderboard", teams: [] };
+  currentMode  = data.mode  || "leaderboard";
+  currentTeams = data.teams || [];
+  updateTeamModeUI();
+});
+
+function generateTeams(playersList, teamCount) {
+  const sorted = [...playersList].sort((a, b) => b.liveScore - a.liveScore);
+  const teams  = Array.from({ length: teamCount }, (_, i) => ({
+    name: TEAM_NAMES[i],
+    color: TEAM_COLORS[i],
+    playerIds:   [],
+    playerNames: [],
+  }));
+
+  let forward = true;
+  let ti = 0;
+  sorted.forEach((player) => {
+    teams[ti].playerIds.push(player.id);
+    teams[ti].playerNames.push(player.name);
+    if (forward) {
+      ti++;
+      if (ti >= teamCount) { ti = teamCount - 1; forward = false; }
+    } else {
+      ti--;
+      if (ti < 0) { ti = 0; forward = true; }
+    }
+  });
+  return teams;
+}
+
+function renderTeamPreview() {
+  if (!teamPreviewGrid) return;
+  if (players.length === 0) {
+    teamPreviewGrid.innerHTML = `<p class="team-preview-empty">Ingen spillere registrert ennå.</p>`;
+    return;
+  }
+  const teams = generateTeams(players, selectedTeamCount);
+  teamPreviewGrid.innerHTML = teams.map((team) => `
+    <div class="team-preview-card" style="border-top-color: ${team.color}">
+      <div class="team-preview-name" style="color: ${team.color}">${escapeHtml(team.name)}</div>
+      <div class="team-preview-count">${team.playerNames.length} spillere</div>
+      <div class="team-preview-list">
+        ${team.playerNames.map((n) => `<span class="team-preview-player">${escapeHtml(n)}</span>`).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+async function startTeamMode() {
+  const teams = generateTeams(players, selectedTeamCount);
+  const teamsForFirestore = teams.map(({ name, color, playerIds }) => ({ name, color, playerIds }));
+  try {
+    await setDoc(doc(db, "meta", "game"), { mode: "teams", teams: teamsForFirestore });
+    showStatus("Lagspill startet! TV-skjermen bytter nå til lagoversikt.", "success");
+  } catch (err) {
+    console.error("Start team error:", err);
+    showStatus("Klarte ikke å starte lagspill.", "error");
+  }
+}
+
+async function endTeamMode() {
+  if (!confirm("Avslutte lagspillet? TV-en bytter tilbake til leaderboardet.")) return;
+  try {
+    await setDoc(doc(db, "meta", "game"), { mode: "leaderboard", teams: [] });
+    showStatus("Lagspillet er avsluttet.", "success");
+  } catch (err) {
+    console.error("End team error:", err);
+    showStatus("Klarte ikke å avslutte lagspill.", "error");
+  }
+}
+
+async function awardTeamPoints(teamIndex, pts) {
+  const team = currentTeams[teamIndex];
+  if (!team || pts === 0) return;
+
+  try {
+    const batch = writeBatch(db);
+    team.playerIds.forEach((id) => {
+      const player = players.find((p) => p.id === id);
+      if (!player) return;
+      const newScore = Math.max(0, player.liveScore + pts);
+      batch.update(doc(db, "users", id), { liveScore: newScore });
+      player.liveScore = newScore;
+    });
+    batch.set(doc(db, "meta", "leaderboard"), { version: increment(1) }, { merge: true });
+    await batch.commit();
+
+    // Refresh table and award cards
+    const search = searchInput ? searchInput.value.toLowerCase() : "";
+    renderTable(players.filter((p) => p.name.toLowerCase().includes(search)));
+    renderTeamAwardCards();
+    showStatus(`${pts > 0 ? "+" : ""}${pts} poeng til ${team.name}!`, "success");
+  } catch (err) {
+    console.error("Award team pts error:", err);
+    showStatus("Klarte ikke å gi poeng.", "error");
+  }
+}
+
+function updateTeamModeUI() {
+  if (!teamSetupEl || !teamActiveEl) return;
+  if (currentMode === "teams") {
+    teamSetupEl.classList.add("hidden");
+    teamActiveEl.classList.remove("hidden");
+    renderTeamAwardCards();
+  } else {
+    teamSetupEl.classList.remove("hidden");
+    teamActiveEl.classList.add("hidden");
+    renderTeamPreview();
+  }
+}
+
+function renderTeamAwardCards() {
+  if (!teamAwardCards) return;
+  teamAwardCards.innerHTML = currentTeams.map((team, i) => {
+    const memberNames = (team.playerIds || [])
+      .map((id) => players.find((p) => p.id === id)?.name || "?")
+      .join(", ");
+    return `
+      <div class="team-award-card" style="border-top-color: ${team.color}">
+        <div class="team-award-name" style="color: ${team.color}">${escapeHtml(team.name)}</div>
+        <div class="team-award-members">${escapeHtml(memberNames)}</div>
+        <div class="score-controls">
+          <button class="score-btn plus" data-team="${i}" data-delta="100">+100</button>
+          <button class="score-btn plus" data-team="${i}" data-delta="50">+50</button>
+          <button class="score-btn minus" data-team="${i}" data-delta="-50">−50</button>
+          <div class="custom-input-wrap">
+            <input type="number" class="custom-score-input" data-team="${i}" placeholder="0" />
+            <button class="score-btn apply" data-team="${i}">Gi</button>
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+
+  teamAwardCards.querySelectorAll(".score-btn[data-delta]").forEach((btn) => {
+    btn.addEventListener("click", () => awardTeamPoints(parseInt(btn.dataset.team), parseInt(btn.dataset.delta)));
+  });
+  teamAwardCards.querySelectorAll(".score-btn.apply").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const ti    = parseInt(btn.dataset.team);
+      const input = teamAwardCards.querySelector(`.custom-score-input[data-team="${ti}"]`);
+      const val   = input ? parseInt(input.value) : 0;
+      if (!isNaN(val) && val !== 0) { awardTeamPoints(ti, val); if (input) input.value = ""; }
+    });
+  });
+  teamAwardCards.querySelectorAll(".custom-score-input").forEach((input) => {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const ti  = parseInt(input.dataset.team);
+        const val = parseInt(input.value);
+        if (!isNaN(val) && val !== 0) { awardTeamPoints(ti, val); input.value = ""; }
+      }
+    });
+  });
 }
 
 // ===== ADD PLAYER =====

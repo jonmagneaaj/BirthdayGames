@@ -83,6 +83,101 @@ body { min-height: 100vh; }
   color: #ef9a9a;
 }
 
+/* ===== TEAM MODE ===== */
+.team-mode-section {
+  background: var(--color-surface);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 22px 24px;
+  margin-bottom: 20px;
+}
+
+.team-section-header {
+  display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 16px;
+}
+
+.team-section-title {
+  font-size: 1rem; font-weight: 900;
+}
+
+.team-section-hint {
+  font-size: 0.8rem; color: var(--color-text-dim);
+}
+
+.team-setup-row {
+  display: flex; align-items: center;
+  gap: 16px; flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.team-count-group {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.team-count-label {
+  font-size: 0.82rem; font-weight: 800;
+  color: var(--color-text-dim); white-space: nowrap;
+}
+
+.team-count-btns { display: flex; gap: 6px; }
+
+.team-count-btn {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 800;
+  width: 36px; height: 36px;
+  border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.15);
+  background: transparent; color: var(--color-text);
+  cursor: pointer; transition: background 0.12s, border-color 0.12s;
+}
+.team-count-btn:hover { background: rgba(255,255,255,0.05); }
+.team-count-btn.active {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: #fff !important;
+}
+
+/* Preview grid */
+#team-preview-grid, #team-award-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.team-preview-card, .team-award-card {
+  background: var(--color-surface2);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-top: 4px solid #e94560;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.team-preview-name, .team-award-name {
+  font-size: 0.95rem; font-weight: 900;
+}
+
+.team-preview-count {
+  font-size: 0.75rem; color: var(--color-text-dim);
+}
+
+.team-preview-list {
+  display: flex; flex-direction: column; gap: 3px;
+}
+
+.team-preview-player {
+  font-size: 0.82rem; color: var(--color-text-dim); font-weight: 700;
+}
+
+.team-preview-empty {
+  font-size: 0.85rem; color: var(--color-text-dim); grid-column: 1 / -1;
+}
+
+.team-award-members {
+  font-size: 0.8rem; color: var(--color-text-dim); line-height: 1.5;
+}
+
 /* Add player strip */
 .add-player-strip {
   display: flex; align-items: center;

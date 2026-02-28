@@ -27,34 +27,45 @@
     </div>
   </header>
 
-  <section class="board-panel board-quiz">
-    <div class="board-panel-header">
-      <div>
-        <div class="board-panel-title">🧠 Quiz Scores</div>
-        <div class="board-panel-subtitle">Speed &amp; accuracy</div>
+  <div id="panels">
+    <section class="board-panel board-quiz">
+      <div class="board-panel-header">
+        <div>
+          <div class="board-panel-title">🧠 Quiz Scores</div>
+          <div class="board-panel-subtitle">Speed &amp; accuracy</div>
+        </div>
+        <div id="quiz-count" class="player-count">—</div>
       </div>
-      <div id="quiz-count" class="player-count">—</div>
-    </div>
-    <div id="quiz-list" class="board-list">
-      <div class="board-empty"><div class="empty-icon">⏳</div><p>Connecting…</p></div>
-    </div>
-    <div id="last-updated">
-      <span class="live-dot"></span>Live · <span id="last-updated-time">—</span>
-    </div>
-  </section>
+      <div id="quiz-list" class="board-list">
+        <div class="board-empty"><div class="empty-icon">⏳</div><p>Connecting…</p></div>
+      </div>
+      <div id="last-updated">
+        <span class="live-dot"></span>Live · <span id="last-updated-time">—</span>
+      </div>
+    </section>
 
-  <section class="board-panel board-live">
-    <div class="board-panel-header">
-      <div>
-        <div class="board-panel-title">🎮 Live Games</div>
-        <div class="board-panel-subtitle">Updated by the host</div>
+    <section class="board-panel board-live">
+      <div class="board-panel-header">
+        <div>
+          <div class="board-panel-title">🎮 Live Games</div>
+          <div class="board-panel-subtitle">Updated by the host</div>
+        </div>
+        <div id="live-count" class="player-count">—</div>
       </div>
-      <div id="live-count" class="player-count">—</div>
+      <div id="live-list" class="board-list">
+        <div class="board-empty"><div class="empty-icon">⏳</div><p>Connecting…</p></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== TEAM MODE SCREEN ===== -->
+  <div id="screen-teams" class="hidden">
+    <div id="teams-header">
+      <span id="teams-title" class="gradient-text">🏆 Lagspill!</span>
+      <div id="teams-subtitle">Finn laget ditt</div>
     </div>
-    <div id="live-list" class="board-list">
-      <div class="board-empty"><div class="empty-icon">⏳</div><p>Connecting…</p></div>
-    </div>
-  </section>
+    <div id="team-grid"></div>
+  </div>
 
 </div>
 

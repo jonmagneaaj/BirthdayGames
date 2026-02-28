@@ -59,6 +59,42 @@
       <span id="add-player-error" class="add-player-error"></span>
     </div>
 
+    <!-- ===== TEAM MODE ===== -->
+    <div class="team-mode-section">
+
+      <!-- Setup view (default) -->
+      <div id="team-setup">
+        <div class="team-section-header">
+          <span class="team-section-title">🏆 Lagspill</span>
+          <span class="team-section-hint">Lag balanseres automatisk på live-poeng</span>
+        </div>
+        <div class="team-setup-row">
+          <div class="team-count-group">
+            <span class="team-count-label">Antall lag:</span>
+            <div class="team-count-btns">
+              <button class="team-count-btn active" data-count="2">2</button>
+              <button class="team-count-btn" data-count="3">3</button>
+              <button class="team-count-btn" data-count="4">4</button>
+              <button class="team-count-btn" data-count="5">5</button>
+              <button class="team-count-btn" data-count="6">6</button>
+            </div>
+          </div>
+          <button id="btn-start-team" class="ds-button">▶ Start Lagspill</button>
+        </div>
+        <div id="team-preview-grid"></div>
+      </div>
+
+      <!-- Active view (team mode on) -->
+      <div id="team-active" class="hidden">
+        <div class="team-section-header">
+          <span class="team-section-title">🏆 Lagspill pågår</span>
+          <button id="btn-end-team" class="ds-button" data-variant="secondary">✕ Avslutt Lagspill</button>
+        </div>
+        <div id="team-award-cards"></div>
+      </div>
+
+    </div>
+
     <div class="table-controls">
       <input class="ds-input" type="text" id="search-input" placeholder="Search players…" />
       <span id="player-total" class="player-total">—</span>
