@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Games — Admin</title>
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===== AUTH SCREEN ===== -->
+  <section id="screen-auth" class="screen">
+    <div class="auth-hero">
+      <span class="emoji">🔒</span>
+      <h1>Admin Panel</h1>
+      <p>Enter the admin password to continue.</p>
+    </div>
+
+    <div class="auth-form">
+      <label for="admin-password">Password</label>
+      <input
+        type="password"
+        id="admin-password"
+        placeholder="Enter password"
+        autocomplete="current-password"
+      />
+      <button id="btn-login">Login</button>
+      <div id="auth-error"></div>
+    </div>
+  </section>
+
+  <!-- ===== ADMIN MAIN SCREEN ===== -->
+  <section id="screen-admin" class="screen">
+
+    <div class="admin-header">
+      <div>
+        <h1>🎛️ Admin Panel</h1>
+        <div class="subtitle">Manage live game scores</div>
+      </div>
+      <div class="header-actions">
+        <a href="questions.html" style="background:var(--color-surface);color:var(--color-text);font-size:0.9rem;font-weight:600;padding:10px 20px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.1);text-decoration:none;">✏️ Edit Questions</a>
+        <button id="btn-refresh">↻ Refresh</button>
+        <button id="btn-push">
+          ▲ Push Update
+          <span id="pending-badge" class="hidden"></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="status-bar"></div>
+
+    <div class="table-controls">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Search players…"
+      />
+      <span id="player-total" class="player-total">—</span>
+    </div>
+
+    <div id="loading-overlay" class="hidden">
+      <div class="spinner"></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Quiz Score</th>
+            <th>Live Score</th>
+            <th>Adjust Live Score</th>
+          </tr>
+        </thead>
+        <tbody id="users-table-body">
+          <tr>
+            <td colspan="5">
+              <div class="table-empty">
+                <span class="icon">⏳</span>
+                Loading players…
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 20px; font-size: 0.8rem; color: var(--color-text-dim); line-height: 1.6;">
+      <strong>How it works:</strong><br>
+      Use the +/− buttons to adjust live game scores for each player.<br>
+      Changes are <em>local only</em> until you click <strong>Push Update</strong>.<br>
+      Pushing saves all changes to Firestore and updates the TV leaderboard instantly.
+    </div>
+
+  </section>
+
+</div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

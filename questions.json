@@ -1,0 +1,102 @@
+[
+  {
+    "question": "What city was the birthday person born in?",
+    "answers": ["Oslo", "Bergen", "Trondheim", "Stavanger"],
+    "correct": 0
+  },
+  {
+    "question": "What year did the birthday person graduate?",
+    "answers": ["2015", "2016", "2017", "2018"],
+    "correct": 2
+  },
+  {
+    "question": "What is the birthday person's favorite food?",
+    "answers": ["Pizza", "Tacos", "Sushi", "Burgers"],
+    "correct": 1
+  },
+  {
+    "question": "What is the birthday person's favorite color?",
+    "answers": ["Red", "Blue", "Green", "Purple"],
+    "correct": 2
+  },
+  {
+    "question": "How many siblings does the birthday person have?",
+    "answers": ["0", "1", "2", "3"],
+    "correct": 1
+  },
+  {
+    "question": "What was the birthday person's first job?",
+    "answers": ["Waiter", "Cashier", "Lifeguard", "Tutor"],
+    "correct": 0
+  },
+  {
+    "question": "What sport does the birthday person enjoy most?",
+    "answers": ["Football", "Swimming", "Tennis", "Running"],
+    "correct": 3
+  },
+  {
+    "question": "What is the birthday person's favorite movie genre?",
+    "answers": ["Horror", "Comedy", "Action", "Romance"],
+    "correct": 2
+  },
+  {
+    "question": "What pet does the birthday person have?",
+    "answers": ["Dog", "Cat", "Fish", "None"],
+    "correct": 0
+  },
+  {
+    "question": "What country did the birthday person last visit?",
+    "answers": ["Spain", "Italy", "France", "Greece"],
+    "correct": 1
+  },
+  {
+    "question": "What is the birthday person's favorite season?",
+    "answers": ["Spring", "Summer", "Autumn", "Winter"],
+    "correct": 1
+  },
+  {
+    "question": "What instrument does the birthday person play?",
+    "answers": ["Guitar", "Piano", "Drums", "None"],
+    "correct": 2
+  },
+  {
+    "question": "What TV show is the birthday person currently watching?",
+    "answers": ["Breaking Bad", "The Office", "Succession", "Friends"],
+    "correct": 2
+  },
+  {
+    "question": "What is the birthday person's coffee order?",
+    "answers": ["Americano", "Latte", "Cappuccino", "Black coffee"],
+    "correct": 1
+  },
+  {
+    "question": "Where did the birthday person go to university?",
+    "answers": ["Oslo", "Bergen", "Trondheim", "Stavanger"],
+    "correct": 0
+  },
+  {
+    "question": "What is the birthday person's hidden talent?",
+    "answers": ["Juggling", "Card tricks", "Singing", "Beatboxing"],
+    "correct": 3
+  },
+  {
+    "question": "What was the birthday person's childhood nickname?",
+    "answers": ["Buddy", "Champ", "Tiger", "Ace"],
+    "correct": 1
+  },
+  {
+    "question": "What is the birthday person's dream holiday destination?",
+    "answers": ["Japan", "New Zealand", "Iceland", "Maldives"],
+    "correct": 0
+  },
+  {
+    "question": "What car does the birthday person drive?",
+    "answers": ["Tesla", "Toyota", "BMW", "Volkswagen"],
+    "correct": 2
+  },
+  {
+    "question": "What is the birthday person's go-to karaoke song?",
+    "answers": ["Bohemian Rhapsody", "Livin' on a Prayer", "Sweet Caroline", "Don't Stop Believin'"],
+    "correct": 2
+  }
+]

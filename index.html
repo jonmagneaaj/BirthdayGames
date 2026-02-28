@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Games — Leaderboard</title>
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/leaderboard.css" />
+  <!-- QR Code library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===== HEADER ===== -->
+  <header id="header">
+    <div>
+      <h1>🎂 Birthday Games</h1>
+      <div class="tagline">Live Leaderboards</div>
+    </div>
+    <div id="qr-section">
+      <div id="qr-code"></div>
+      <div id="qr-label">Loading…</div>
+    </div>
+  </header>
+
+  <!-- ===== QUIZ LEADERBOARD ===== -->
+  <section class="board-panel board-quiz">
+    <div class="board-panel-header">
+      <div>
+        <div class="board-panel-title">🧠 Quiz Scores</div>
+        <div class="board-panel-subtitle">Based on speed &amp; accuracy</div>
+      </div>
+      <div id="quiz-count" class="player-count">—</div>
+    </div>
+    <div id="quiz-list" class="board-list">
+      <div class="board-empty">
+        <div class="empty-icon">⏳</div>
+        <p>Connecting to leaderboard…</p>
+      </div>
+    </div>
+    <div id="last-updated">
+      <span class="live-dot"></span>Live &middot; Updated: <span id="last-updated-time">—</span>
+    </div>
+  </section>
+
+  <!-- ===== LIVE GAMES LEADERBOARD ===== -->
+  <section class="board-panel board-live">
+    <div class="board-panel-header">
+      <div>
+        <div class="board-panel-title">🎮 Live Games</div>
+        <div class="board-panel-subtitle">Updated by the host</div>
+      </div>
+      <div id="live-count" class="player-count">—</div>
+    </div>
+    <div id="live-list" class="board-list">
+      <div class="board-empty">
+        <div class="empty-icon">⏳</div>
+        <p>Connecting to leaderboard…</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script type="module" src="js/leaderboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Birthday Games — Play!</title>
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/play.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Top bar -->
+  <div id="top-bar">
+    <span class="logo">🎂 Birthday Games</span>
+    <span id="player-display"></span>
+  </div>
+
+  <!-- ===== REGISTER SCREEN ===== -->
+  <section id="screen-register" class="screen">
+    <div class="register-hero">
+      <span class="emoji">🎉</span>
+      <h1>Join the Party!</h1>
+      <p>Enter your name to start the quiz.<br>10 questions, 30 seconds each. Go fast for bonus points!</p>
+    </div>
+
+    <div class="card">
+      <div class="name-input-wrap">
+        <label for="player-name-input">Your name</label>
+        <input
+          type="text"
+          id="player-name-input"
+          placeholder="e.g. Sarah"
+          maxlength="30"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="words"
+          spellcheck="false"
+        />
+      </div>
+      <br />
+      <button id="btn-register">Let's Play!</button>
+      <div id="register-error" class="error-msg hidden"></div>
+    </div>
+
+    <p class="register-note">
+      Scoring: up to 1,000 pts per question.<br>
+      Faster answers = more points!
+    </p>
+  </section>
+
+  <!-- ===== QUIZ SCREEN ===== -->
+  <section id="screen-quiz" class="screen">
+
+    <div id="progress-bar-wrap">
+      <div id="progress-bar" style="width: 0%"></div>
+    </div>
+
+    <div id="quiz-stats">
+      <span id="question-counter">Question 1 / 10</span>
+      <span id="current-score-display">Score: 0</span>
+    </div>
+
+    <div id="timer-wrap">
+      <div id="timer-ring-wrap">
+        <svg id="timer-svg" viewBox="0 0 72 72">
+          <circle id="timer-ring-bg" cx="36" cy="36" r="30" />
+          <circle id="timer-ring" cx="36" cy="36" r="30" />
+        </svg>
+        <div id="timer-text">30</div>
+      </div>
+    </div>
+
+    <div id="question-card">
+      <div id="question-text"></div>
+    </div>
+
+    <div id="answers-grid"></div>
+
+  </section>
+
+  <!-- ===== RESULTS SCREEN ===== -->
+  <section id="screen-results" class="screen">
+
+    <div class="results-trophy">🏆</div>
+
+    <div class="results-hero">
+      <h2>Quiz Complete!</h2>
+      <div class="final-score" id="final-score">0</div>
+      <div class="score-label">points</div>
+    </div>
+
+    <div class="results-breakdown">
+      <div class="breakdown-row">
+        <span class="label">Correct answers</span>
+        <span class="value" id="correct-count">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="label">Avg. response time</span>
+        <span class="value" id="avg-time">—</span>
+      </div>
+    </div>
+
+    <button id="btn-view-leaderboard">View Leaderboard →</button>
+
+    <p class="results-note">
+      Your score has been saved.<br>Check the big screen to see your ranking!
+    </p>
+
+  </section>
+
+  <!-- ===== ALREADY PLAYED SCREEN ===== -->
+  <section id="screen-done" class="screen">
+    <div class="emoji">✅</div>
+    <h2>You've already played!</h2>
+    <p>Your quiz score:</p>
+    <div id="done-score">0</div>
+    <p style="color: var(--color-text-dim); font-size: 0.85rem;">
+      Check the TV screen to see your ranking on the leaderboard.
+    </p>
+    <button id="btn-view-leaderboard-done" onclick="window.location.href='index.html'">
+      View Leaderboard →
+    </button>
+  </section>
+
+</div>
+
+<!-- Points toast overlay -->
+<div id="points-toast"></div>
+
+<script type="module" src="js/quiz.js"></script>
+</body>
+</html>
