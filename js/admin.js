@@ -56,7 +56,6 @@ const teamActiveEl     = document.getElementById("team-active");
 const teamPreviewGrid  = document.getElementById("team-preview-grid");
 const teamAwardCards   = document.getElementById("team-award-cards");
 const btnStartTeam     = document.getElementById("btn-start-team");
-const btnEndTeam       = document.getElementById("btn-end-team");
 
 // ===== SCREEN MANAGEMENT =====
 function showScreen(name) {
@@ -351,7 +350,6 @@ document.querySelectorAll(".team-count-btn").forEach((btn) => {
 });
 
 if (btnStartTeam) btnStartTeam.addEventListener("click", startTeamMode);
-if (btnEndTeam)   btnEndTeam.addEventListener("click", endTeamMode);
 
 // Listen to meta/game so UI stays in sync across devices
 onSnapshot(doc(db, "meta", "game"), (snap) => {
@@ -427,30 +425,37 @@ async function endTeamMode() {
   }
 }
 
-async function awardTeamPoints(teamIndex, pts) {
-  const team = currentTeams[teamIndex];
-  if (!team || pts === 0) return;
+async function awardAllAndEnd() {
+  if (!teamAwardCards) return;
+  const pointsPerTeam = [];
+  teamAwardCards.querySelectorAll(".team-pts-input").forEach((input) => {
+    pointsPerTeam[parseInt(input.dataset.team)] = parseInt(input.value) || 0;
+  });
 
   try {
     const batch = writeBatch(db);
-    team.playerIds.forEach((id) => {
-      const player = players.find((p) => p.id === id);
-      if (!player) return;
-      const newScore = Math.max(0, player.liveScore + pts);
-      batch.update(doc(db, "users", id), { liveScore: newScore });
-      player.liveScore = newScore;
+    pointsPerTeam.forEach((pts, teamIndex) => {
+      if (!pts) return;
+      const team = currentTeams[teamIndex];
+      if (!team) return;
+      team.playerIds.forEach((id) => {
+        const player = players.find((p) => p.id === id);
+        if (!player) return;
+        const newScore = Math.max(0, player.liveScore + pts);
+        batch.update(doc(db, "users", id), { liveScore: newScore });
+        player.liveScore = newScore;
+      });
     });
+    batch.set(doc(db, "meta", "game"), { mode: "leaderboard", teams: [] });
     batch.set(doc(db, "meta", "leaderboard"), { version: increment(1) }, { merge: true });
     await batch.commit();
 
-    // Refresh table and award cards
     const search = searchInput ? searchInput.value.toLowerCase() : "";
     renderTable(players.filter((p) => p.name.toLowerCase().includes(search)));
-    renderTeamAwardCards();
-    showStatus(`${pts > 0 ? "+" : ""}${pts} poeng til ${team.name}!`, "success");
+    showStatus("Poeng gitt og lagspillet er avsluttet!", "success");
   } catch (err) {
-    console.error("Award team pts error:", err);
-    showStatus("Klarte ikke å gi poeng.", "error");
+    console.error("Award all and end error:", err);
+    showStatus("Klarte ikke å gi poeng. Prøv igjen.", "error");
   }
 }
 
@@ -469,7 +474,8 @@ function updateTeamModeUI() {
 
 function renderTeamAwardCards() {
   if (!teamAwardCards) return;
-  teamAwardCards.innerHTML = currentTeams.map((team, i) => {
+
+  const cardsHtml = currentTeams.map((team, i) => {
     const memberNames = (team.playerIds || [])
       .map((id) => players.find((p) => p.id === id)?.name || "?")
       .join(", ");
@@ -477,38 +483,22 @@ function renderTeamAwardCards() {
       <div class="team-award-card" style="border-top-color: ${team.color}">
         <div class="team-award-name" style="color: ${team.color}">${escapeHtml(team.name)}</div>
         <div class="team-award-members">${escapeHtml(memberNames)}</div>
-        <div class="score-controls">
-          <button class="score-btn plus" data-team="${i}" data-delta="100">+100</button>
-          <button class="score-btn plus" data-team="${i}" data-delta="50">+50</button>
-          <button class="score-btn minus" data-team="${i}" data-delta="-50">−50</button>
-          <div class="custom-input-wrap">
-            <input type="number" class="custom-score-input" data-team="${i}" placeholder="0" />
-            <button class="score-btn apply" data-team="${i}">Gi</button>
-          </div>
+        <div class="team-pts-row">
+          <input type="number" class="custom-score-input team-pts-input" data-team="${i}" placeholder="0" min="0" />
+          <span class="team-pts-label">poeng</span>
         </div>
       </div>`;
   }).join("");
 
-  teamAwardCards.querySelectorAll(".score-btn[data-delta]").forEach((btn) => {
-    btn.addEventListener("click", () => awardTeamPoints(parseInt(btn.dataset.team), parseInt(btn.dataset.delta)));
-  });
-  teamAwardCards.querySelectorAll(".score-btn.apply").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const ti    = parseInt(btn.dataset.team);
-      const input = teamAwardCards.querySelector(`.custom-score-input[data-team="${ti}"]`);
-      const val   = input ? parseInt(input.value) : 0;
-      if (!isNaN(val) && val !== 0) { awardTeamPoints(ti, val); if (input) input.value = ""; }
-    });
-  });
-  teamAwardCards.querySelectorAll(".custom-score-input").forEach((input) => {
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const ti  = parseInt(input.dataset.team);
-        const val = parseInt(input.value);
-        if (!isNaN(val) && val !== 0) { awardTeamPoints(ti, val); input.value = ""; }
-      }
-    });
-  });
+  teamAwardCards.innerHTML = `
+    <div class="team-award-grid">${cardsHtml}</div>
+    <div class="team-award-actions">
+      <button id="btn-award-and-end" class="ds-button">✓ Gi poeng &amp; Avslutt lagspill</button>
+      <button id="btn-end-no-pts" class="ds-button" data-variant="secondary">Avslutt uten poeng</button>
+    </div>`;
+
+  document.getElementById("btn-award-and-end")?.addEventListener("click", awardAllAndEnd);
+  document.getElementById("btn-end-no-pts")?.addEventListener("click", endTeamMode);
 }
 
 // ===== ADD PLAYER =====

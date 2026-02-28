@@ -139,7 +139,7 @@ body { min-height: 100vh; }
 }
 
 /* Preview grid */
-#team-preview-grid, #team-award-cards {
+#team-preview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 12px;
@@ -176,6 +176,23 @@ body { min-height: 100vh; }
 
 .team-award-members {
   font-size: 0.8rem; color: var(--color-text-dim); line-height: 1.5;
+}
+
+.team-pts-row {
+  display: flex; align-items: center; gap: 8px; margin-top: 4px;
+}
+.team-pts-row .custom-score-input { width: 80px; }
+.team-pts-label { font-size: 0.82rem; color: var(--color-text-dim); font-weight: 700; }
+
+.team-award-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.team-award-actions {
+  display: flex; gap: 10px; flex-wrap: wrap;
 }
 
 /* Add player strip */
