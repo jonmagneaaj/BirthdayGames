@@ -52,6 +52,13 @@
 
     <div id="status-bar"></div>
 
+    <!-- Add Player -->
+    <div id="add-player-form" class="add-player-strip">
+      <input class="ds-input" type="text" id="add-player-name" placeholder="Player name…" autocomplete="off" />
+      <button id="btn-add-player" class="ds-button" data-variant="secondary">+ Add Player</button>
+      <span id="add-player-error" class="add-player-error"></span>
+    </div>
+
     <div class="table-controls">
       <input class="ds-input" type="text" id="search-input" placeholder="Search players…" />
       <span id="player-total" class="player-total">—</span>
@@ -70,10 +77,11 @@
             <th>Quiz Score</th>
             <th>Live Score</th>
             <th>Adjust Live Score</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="users-table-body">
-          <tr><td colspan="5"><div class="table-empty"><span class="icon">⏳</span>Loading players…</div></td></tr>
+          <tr><td colspan="6"><div class="table-empty"><span class="icon">⏳</span>Loading players…</div></td></tr>
         </tbody>
       </table>
     </div>

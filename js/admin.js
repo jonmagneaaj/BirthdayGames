@@ -2,6 +2,8 @@ import { db } from "../firebase-config.js";
 import {
   collection,
   getDocs,
+  addDoc,
+  deleteDoc,
   doc,
   writeBatch,
   getDoc,
@@ -9,6 +11,7 @@ import {
   orderBy,
   query,
   increment,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ===== CONFIG =====
@@ -34,6 +37,11 @@ const searchInput = document.getElementById("search-input");
 const playerTotalEl = document.getElementById("player-total");
 const tableBody = document.getElementById("users-table-body");
 const loadingOverlay = document.getElementById("loading-overlay");
+
+const addPlayerForm = document.getElementById("add-player-form");
+const addPlayerInput = document.getElementById("add-player-name");
+const btnAddPlayer = document.getElementById("btn-add-player");
+const addPlayerError = document.getElementById("add-player-error");
 
 // ===== SCREEN MANAGEMENT =====
 function showScreen(name) {
@@ -102,10 +110,10 @@ function renderTable(data) {
   if (data.length === 0) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="5">
+        <td colspan="6">
           <div class="table-empty">
             <span class="icon">👥</span>
-            No players registered yet.
+            No players registered yet. Add one above!
           </div>
         </td>
       </tr>`;
@@ -137,6 +145,9 @@ function renderTable(data) {
               <button class="score-btn apply" data-id="${player.id}">Apply</button>
             </div>
           </div>
+        </td>
+        <td class="td-delete">
+          <button class="btn-delete-player" data-id="${player.id}" data-name="${escapeHtml(player.name)}">Remove</button>
         </td>
       </tr>`;
   }).join("");
@@ -172,6 +183,11 @@ function renderTable(data) {
         }
       }
     });
+  });
+
+  // Delete player buttons
+  tableBody.querySelectorAll(".btn-delete-player").forEach((btn) => {
+    btn.addEventListener("click", () => deletePlayer(btn.dataset.id, btn.dataset.name));
   });
 }
 
@@ -303,6 +319,84 @@ function hideStatus() {
 function setLoading(loading) {
   if (loadingOverlay) loadingOverlay.style.display = loading ? "block" : "none";
   if (tableBody && loading) tableBody.innerHTML = "";
+}
+
+// ===== ADD PLAYER =====
+if (btnAddPlayer) {
+  btnAddPlayer.addEventListener("click", addPlayer);
+}
+if (addPlayerInput) {
+  addPlayerInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") addPlayer();
+  });
+}
+
+async function addPlayer() {
+  const name = addPlayerInput ? addPlayerInput.value.trim() : "";
+  if (!name) {
+    setAddError("Please enter a name.");
+    return;
+  }
+
+  // Check for duplicate name
+  const duplicate = players.find((p) => p.name.toLowerCase() === name.toLowerCase());
+  if (duplicate) {
+    setAddError(`"${name}" is already in the list.`);
+    return;
+  }
+
+  if (btnAddPlayer) { btnAddPlayer.disabled = true; btnAddPlayer.textContent = "Adding…"; }
+  setAddError("");
+
+  try {
+    const docRef = await addDoc(collection(db, "users"), {
+      name,
+      quizScore: 0,
+      liveScore: 0,
+      quizCompleted: false,
+      registeredAt: serverTimestamp(),
+    });
+
+    players.push({ id: docRef.id, name, quizScore: 0, liveScore: 0 });
+    if (addPlayerInput) addPlayerInput.value = "";
+
+    const search = searchInput ? searchInput.value.toLowerCase() : "";
+    const filtered = players.filter((p) => p.name.toLowerCase().includes(search));
+    renderTable(filtered);
+    if (playerTotalEl) playerTotalEl.textContent = `${players.length} player${players.length !== 1 ? "s" : ""}`;
+
+    showStatus(`"${name}" added successfully.`, "success");
+  } catch (err) {
+    console.error("Add player error:", err);
+    setAddError("Failed to add player. Check your connection.");
+  } finally {
+    if (btnAddPlayer) { btnAddPlayer.disabled = false; btnAddPlayer.textContent = "+ Add Player"; }
+  }
+}
+
+function setAddError(msg) {
+  if (addPlayerError) addPlayerError.textContent = msg;
+}
+
+// ===== DELETE PLAYER =====
+async function deletePlayer(id, name) {
+  if (!confirm(`Remove "${name}" from the game? This cannot be undone.`)) return;
+
+  try {
+    await deleteDoc(doc(db, "users", id));
+    players = players.filter((p) => p.id !== id);
+    delete pendingChanges[id];
+
+    const search = searchInput ? searchInput.value.toLowerCase() : "";
+    const filtered = players.filter((p) => p.name.toLowerCase().includes(search));
+    renderTable(filtered);
+    if (playerTotalEl) playerTotalEl.textContent = `${players.length} player${players.length !== 1 ? "s" : ""}`;
+    updatePendingBadge();
+    showStatus(`"${name}" removed.`, "success");
+  } catch (err) {
+    console.error("Delete player error:", err);
+    showStatus("Failed to remove player. Try again.", "error");
+  }
 }
 
 // ===== UTILS =====
