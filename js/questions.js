@@ -16,190 +16,190 @@ const ADMIN_PASSWORD = "12345";
 // ===== INSPIRATION DATA =====
 const INSPIRATIONS = [
   {
-    category: "Childhood",
+    category: "Barndom",
     icon: "👶",
-    text: "What was [name]'s favourite TV show as a kid?",
-    hint: "Think cartoons, Saturday morning shows, or that one series they watched on repeat.",
+    text: "Hva var [navn]s favoritt-TV-program som barn?",
+    hint: "Tenk tegnefilmer, lørdagsmorgenprogrammer, eller den serien de så på repeat.",
   },
   {
-    category: "Childhood",
+    category: "Barndom",
     icon: "🏠",
-    text: "What street or town did [name] grow up in?",
-    hint: "Use the real name as one answer and make up 3 plausible-sounding alternatives.",
+    text: "I hvilken gate eller by vokste [navn] opp?",
+    hint: "Bruk det ekte stedet som ett svar og finn på tre troverdige alternativer.",
   },
   {
-    category: "Childhood",
+    category: "Barndom",
     icon: "🐾",
-    text: "What was the name of [name]'s first pet?",
-    hint: "Great for true friends — use the real name and three red herrings.",
+    text: "Hva het [navn]s første kjæledyr?",
+    hint: "Perfekt for de som kjenner [navn] godt — bruk det ekte navnet og tre distrahere alternativer.",
   },
   {
-    category: "Childhood",
+    category: "Barndom",
     icon: "🎒",
-    text: "What was [name]'s least favourite subject at school?",
-    hint: "Maths? PE? Art? Ask their family beforehand if you're not sure.",
+    text: "Hva var [navn]s minst favorittfag på skolen?",
+    hint: "Maths? Gym? Kunst? Spør familien på forhånd hvis du er usikker.",
   },
   {
-    category: "Food & Drink",
+    category: "Mat og drikke",
     icon: "🍕",
-    text: "What is [name]'s go-to takeaway order on a lazy Friday night?",
-    hint: "Pizza, kebab, Chinese, sushi — pick what fits best and add fun wrong options.",
+    text: "Hva er [navn]s go-to takeaway-bestilling på en lat fredagskveld?",
+    hint: "Pizza, kebab, kinesisk, sushi — velg det som passer best og legg til morsomme gale alternativer.",
   },
   {
-    category: "Food & Drink",
+    category: "Mat og drikke",
     icon: "☕",
-    text: "How does [name] take their morning coffee?",
-    hint: "Flat white? Black? Three sugars? Or are they a tea person?",
+    text: "Hvordan drikker [navn] morgenkaffen sin?",
+    hint: "Flat white? Sort? Tre sukker? Eller er de en te-person?",
   },
   {
-    category: "Food & Drink",
+    category: "Mat og drikke",
     icon: "🍰",
-    text: "What flavour birthday cake would [name] secretly prefer over all others?",
-    hint: "Classic chocolate, lemon drizzle, carrot cake, or something wild?",
+    text: "Hvilken smak bursdagskake ville [navn] hemmelig foretrekke over alle andre?",
+    hint: "Klassisk sjokolade, sitronkake, gulrotkake, eller noe vilt?",
   },
   {
-    category: "Food & Drink",
+    category: "Mat og drikke",
     icon: "🍺",
-    text: "What is [name]'s signature drink at the pub?",
-    hint: "Pint of lager? Gin and tonic? Strictly lime and soda?",
+    text: "Hva er [navn]s signaturdrikk på baren?",
+    hint: "Fatøl? Gin og tonic? Bare lime og soda?",
   },
   {
-    category: "Travel",
+    category: "Reise",
     icon: "✈️",
-    text: "Which country is top of [name]'s travel bucket list?",
-    hint: "Japan, Iceland, New Zealand, Peru? Ask them — or use your best guess!",
+    text: "Hvilket land er øverst på [navn]s reise-bucket-list?",
+    hint: "Japan, Island, New Zealand, Peru? Spør dem — eller gjett!",
   },
   {
-    category: "Travel",
+    category: "Reise",
     icon: "🗺️",
-    text: "What was [name]'s most memorable holiday destination?",
-    hint: "Think about the trips they always bring up in conversation.",
+    text: "Hva var [navn]s mest minneverdige feriemål?",
+    hint: "Tenk på turene de alltid nevner i samtalen.",
   },
   {
-    category: "Travel",
+    category: "Reise",
     icon: "🧳",
-    text: "What does [name] always forget to pack when travelling?",
-    hint: "Charger, toothbrush, sunscreen, travel adapter?",
+    text: "Hva glemmer [navn] alltid å pakke når de reiser?",
+    hint: "Lader, tannbørste, solkrem, reiseadapter?",
   },
   {
-    category: "Pop Culture",
+    category: "Popkultur",
     icon: "🎬",
-    text: "What film can [name] quote almost word for word?",
-    hint: "Think about movies they've made everyone watch at least twice.",
+    text: "Hvilken film kan [navn] sitere nesten ord for ord?",
+    hint: "Tenk på filmer de har fått alle til å se minst to ganger.",
   },
   {
-    category: "Pop Culture",
+    category: "Popkultur",
     icon: "📺",
-    text: "Which TV series did [name] binge-watch most recently?",
-    hint: "Pick current shows and a couple of classics as answer options.",
+    text: "Hvilken TV-serie bingewatchet [navn] sist?",
+    hint: "Velg aktuelle serier og noen klassikere som svaralternativer.",
   },
   {
-    category: "Pop Culture",
+    category: "Popkultur",
     icon: "🎵",
-    text: "What song does [name] always put on first at a house party?",
-    hint: "Their anthem — the song everyone associates with them.",
+    text: "Hvilken sang setter [navn] alltid på først på en fest hjemme?",
+    hint: "Hymnen deres — sangen alle forbinder med dem.",
   },
   {
-    category: "Pop Culture",
+    category: "Popkultur",
     icon: "🎤",
-    text: "What is [name]'s go-to karaoke song?",
-    hint: "Bonus points if it's embarrassingly out of their range.",
+    text: "Hva er [navn]s go-to karaoke-sang?",
+    hint: "Bonuspoeng hvis den er pinlig utenfor stemmeregisteret deres.",
   },
   {
-    category: "Work & Career",
+    category: "Jobb og karriere",
     icon: "💼",
-    text: "What was [name]'s very first job?",
-    hint: "Babysitting? Fast food? Delivering newspapers? Use the real one and invent others.",
+    text: "Hva var [navn]s aller første jobb?",
+    hint: "Barnevakt? Fast food? Avislevering? Bruk den ekte og finn på andre.",
   },
   {
-    category: "Work & Career",
+    category: "Jobb og karriere",
     icon: "🎓",
-    text: "What did [name] study at university?",
-    hint: "Or if they didn't go, what career did they think they'd have at age 10?",
+    text: "Hva studerte [navn] på universitetet?",
+    hint: "Eller hvis de ikke gikk dit, hvilken jobb trodde de de ville ha som 10-åring?",
   },
   {
-    category: "Work & Career",
+    category: "Jobb og karriere",
     icon: "🌟",
-    text: "What is [name]'s secret dream job if money were no object?",
-    hint: "Astronaut, chef, professional dog cuddler — the more personal the better.",
+    text: "Hva er [navn]s hemmelige drømmejobb om penger ikke var et problem?",
+    hint: "Astronaut, kokk, profesjonell hundeklemmer — jo mer personlig, jo bedre.",
   },
   {
-    category: "Personality",
+    category: "Personlighet",
     icon: "⏰",
-    text: "How early does [name] actually arrive to things?",
-    hint: "Chronically early, right on time, fashionably late, or chronically late?",
+    text: "Hvor tidlig ankommer [navn] egentlig til ting?",
+    hint: "Kronisk tidlig, akkurat i tide, moteriktig sen, eller kronisk sen?",
   },
   {
-    category: "Personality",
+    category: "Personlighet",
     icon: "📱",
-    text: "What app does [name] spend the most time on?",
-    hint: "Instagram, TikTok, YouTube, or some obscure game?",
+    text: "Hvilken app bruker [navn] mest tid på?",
+    hint: "Instagram, TikTok, YouTube, eller et obskurt spill?",
   },
   {
-    category: "Personality",
+    category: "Personlighet",
     icon: "🛌",
-    text: "What time does [name] naturally wake up on a weekend?",
-    hint: "7am gym warrior? 11am luxury? Whenever someone texts them?",
+    text: "Når våkner [navn] naturlig i helgene?",
+    hint: "Tidlig på trening? Luksusen av å sove lenge? Når noen sender melding?",
   },
   {
-    category: "Personality",
+    category: "Personlighet",
     icon: "💸",
-    text: "What would [name] splurge on if given €500 right now?",
-    hint: "Shoes, gadgets, a weekend trip, or straight to savings?",
+    text: "Hva ville [navn] spleise på om de fikk 5 000 kr akkurat nå?",
+    hint: "Sko, gadgets, en weekendtur, eller rett i sparegrisen?",
   },
   {
-    category: "Fun & Random",
+    category: "Gøy og tilfeldig",
     icon: "🦸",
-    text: "Which superhero power would [name] choose?",
-    hint: "Invisibility, time travel, flying, or reading minds?",
+    text: "Hvilken superkraft ville [navn] velge?",
+    hint: "Usynlighet, tidsreiser, flyving, eller tankeleser?",
   },
   {
-    category: "Fun & Random",
+    category: "Gøy og tilfeldig",
     icon: "🏝️",
-    text: "What three things would [name] bring to a desert island?",
-    hint: "Turn this into a multiple choice: which combination is most like them?",
+    text: "Hva ville [navn] ta med til en øde øy?",
+    hint: "Gjør dette til en flervalgsoppgave: hvilken kombinasjon er mest typisk for dem?",
   },
   {
-    category: "Fun & Random",
+    category: "Gøy og tilfeldig",
     icon: "🐉",
-    text: "Which Game of Thrones / fantasy house would [name] belong to?",
-    hint: "Stark, Lannister, Targaryen, or Baratheon? Adapt to any fandom they love.",
+    text: "Hvilket Game of Thrones / fantasy-hus ville [navn] tilhøre?",
+    hint: "Stark, Lannister, Targaryen eller Baratheon? Tilpass til fandomet de elsker.",
   },
   {
-    category: "Fun & Random",
+    category: "Gøy og tilfeldig",
     icon: "🧀",
-    text: "What food would [name] happily eat every single day for a year?",
-    hint: "The more specific and personal, the funnier the guessing will be.",
+    text: "Hvilken mat ville [navn] gjerne spise hver eneste dag i et år?",
+    hint: "Jo mer spesifikt og personlig, jo morsommere blir gjetteleken.",
   },
   {
-    category: "Friends & Family",
+    category: "Venner og familie",
     icon: "👯",
-    text: "Who has been [name]'s friend the longest in this room?",
-    hint: "List a few names as answers — keeps it personal and gets a reaction!",
+    text: "Hvem har vært [navn]s venn lengst i dette rommet?",
+    hint: "List opp noen navn som svar — holder det personlig og gir reaksjoner!",
   },
   {
-    category: "Friends & Family",
+    category: "Venner og familie",
     icon: "📞",
-    text: "Who does [name] call first when something exciting happens?",
-    hint: "Mum, best friend, partner? Use real names for maximum chaos.",
+    text: "Hvem ringer [navn] først når noe spennende skjer?",
+    hint: "Mamma, bestevenn, kjæreste? Bruk ekte navn for maksimalt kaos.",
   },
   {
-    category: "Friends & Family",
+    category: "Venner og familie",
     icon: "🎁",
-    text: "What is the best gift [name] has ever received?",
-    hint: "Ask them in advance and use the real answer — catches people off guard.",
+    text: "Hva er den beste gaven [navn] noensinne har fått?",
+    hint: "Spør dem på forhånd og bruk det ekte svaret — overrasker folk.",
   },
   {
-    category: "Milestones",
+    category: "Milepæler",
     icon: "🚗",
-    text: "How old was [name] when they passed their driving test?",
-    hint: "Use the real age and three close alternatives (e.g. 17, 18, 19, 21).",
+    text: "Hvor gammel var [navn] da de tok lappen?",
+    hint: "Bruk den ekte alderen og tre nærliggende alternativer (f.eks. 17, 18, 19, 21).",
   },
   {
-    category: "Milestones",
+    category: "Milepæler",
     icon: "🏡",
-    text: "Which city or town did [name] live in when they were happiest?",
-    hint: "A personal question that usually sparks a great story!",
+    text: "Hvilken by eller sted bodde [navn] i da de var lykkeligst?",
+    hint: "Et personlig spørsmål som alltid utløser en god historie!",
   },
 ];
 
@@ -242,7 +242,7 @@ function tryLogin() {
     loadQuestions();
     showRandomInspiration();
   } else {
-    authError.textContent = "Wrong password.";
+    authError.textContent = "Feil passord.";
     authInput.value = "";
     authInput.focus();
   }
@@ -321,17 +321,17 @@ btnAddQuestion && btnAddQuestion.addEventListener("click", submitQuestion);
 
 async function submitQuestion() {
   const questionText = questionInput ? questionInput.value.trim() : "";
-  if (!questionText) { showFormStatus("Please enter a question.", "error"); return; }
+  if (!questionText) { showFormStatus("Vennligst skriv inn et spørsmål.", "error"); return; }
 
   const inputs = answersForm ? answersForm.querySelectorAll(".answer-input") : [];
   const answers = Array.from(inputs).map((i) => i.value.trim());
 
   // Validate: need at least 2 non-empty answers
   const filledCount = answers.filter(Boolean).length;
-  if (filledCount < 2) { showFormStatus("Please fill in at least 2 answers.", "error"); return; }
+  if (filledCount < 2) { showFormStatus("Fyll inn minst 2 svar.", "error"); return; }
 
   // Validate correct answer is filled
-  if (!answers[selectedCorrect]) { showFormStatus("The marked correct answer can't be empty.", "error"); return; }
+  if (!answers[selectedCorrect]) { showFormStatus("Det markerte riktige svaret kan ikke være tomt.", "error"); return; }
 
   // Remove trailing empty answers and adjust correct index
   const filteredAnswers = answers.slice(0, selectedAnswerCount).filter(Boolean);
@@ -351,15 +351,15 @@ async function submitQuestion() {
       createdAt: serverTimestamp(),
     });
 
-    showFormStatus("Question added!", "success");
+    showFormStatus("Spørsmål lagt til!", "success");
     resetForm();
     await loadQuestions();
   } catch (err) {
     console.error("Add question error:", err);
-    showFormStatus("Failed to save. Check your connection.", "error");
+    showFormStatus("Klarte ikke å lagre. Sjekk tilkoblingen din.", "error");
   } finally {
     btnAddQuestion.disabled = false;
-    btnAddQuestion.textContent = "+ Add Question";
+    btnAddQuestion.textContent = "+ Legg til spørsmål";
   }
 }
 
@@ -379,7 +379,7 @@ function showFormStatus(msg, type) {
 // ===== LOAD QUESTIONS =====
 async function loadQuestions() {
   if (!questionsList) return;
-  questionsList.innerHTML = `<div class="list-loading">Loading…</div>`;
+  questionsList.innerHTML = `<div class="list-loading">Laster…</div>`;
 
   try {
     const snapshot = await getDocs(query(collection(db, "questions"), orderBy("createdAt", "asc")));
@@ -387,15 +387,15 @@ async function loadQuestions() {
     renderQuestionsList();
   } catch (err) {
     console.error("Load questions error:", err);
-    questionsList.innerHTML = `<div class="list-empty"><span class="icon">⚠️</span>Failed to load questions.</div>`;
+    questionsList.innerHTML = `<div class="list-empty"><span class="icon">⚠️</span>Klarte ikke å laste spørsmål.</div>`;
   }
 }
 
 function renderQuestionsList() {
-  if (questionCountBadge) questionCountBadge.textContent = `${questions.length} question${questions.length !== 1 ? "s" : ""}`;
+  if (questionCountBadge) questionCountBadge.textContent = `${questions.length} spørsmål`;
 
   if (questions.length === 0) {
-    questionsList.innerHTML = `<div class="list-empty"><span class="icon">✏️</span>No questions yet — add your first one above!</div>`;
+    questionsList.innerHTML = `<div class="list-empty"><span class="icon">✏️</span>Ingen spørsmål ennå — legg til det første ovenfor!</div>`;
     return;
   }
 
@@ -422,14 +422,14 @@ function renderQuestionsList() {
 
 // ===== DELETE QUESTION =====
 async function deleteQuestion(id) {
-  if (!confirm("Delete this question?")) return;
+  if (!confirm("Slette dette spørsmålet?")) return;
   try {
     await deleteDoc(doc(db, "questions", id));
     questions = questions.filter((q) => q.id !== id);
     renderQuestionsList();
   } catch (err) {
     console.error("Delete error:", err);
-    alert("Failed to delete. Try again.");
+    alert("Klarte ikke å slette. Prøv igjen.");
   }
 }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-color-scheme="dark">
+<html lang="no" data-color-scheme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,15 +19,15 @@
   <section id="screen-auth" class="screen">
     <div class="auth-hero">
       <span class="auth-emoji">🔒</span>
-      <h1>Admin Panel</h1>
-      <p>Enter the password to continue.</p>
+      <h1>Adminpanel</h1>
+      <p>Skriv inn passordet for å fortsette.</p>
     </div>
     <div class="auth-form">
       <div class="ds-field">
-        <label class="ds-label" for="admin-password">Password</label>
-        <input class="ds-input" type="password" id="admin-password" placeholder="Enter password" autocomplete="current-password" />
+        <label class="ds-label" for="admin-password">Passord</label>
+        <input class="ds-input" type="password" id="admin-password" placeholder="Skriv inn passord" autocomplete="current-password" />
       </div>
-      <button id="btn-login" class="ds-button" data-fullwidth>Login</button>
+      <button id="btn-login" class="ds-button" data-fullwidth>Logg inn</button>
       <div id="auth-error" class="auth-error-msg"></div>
     </div>
   </section>
@@ -37,14 +37,14 @@
 
     <div class="admin-header">
       <div>
-        <h1>🎛️ Admin Panel</h1>
-        <div class="subtitle">Manage live game scores</div>
+        <h1>🎛️ Adminpanel</h1>
+        <div class="subtitle">Administrer live-lekpoeng</div>
       </div>
       <div class="header-actions">
-        <a href="questions.html" class="ds-button" data-variant="secondary">✏️ Edit Questions</a>
-        <button id="btn-refresh" class="ds-button" data-variant="secondary">↻ Refresh</button>
+        <a href="questions.html" class="ds-button" data-variant="secondary">✏️ Rediger spørsmål</a>
+        <button id="btn-refresh" class="ds-button" data-variant="secondary">↻ Oppdater</button>
         <button id="btn-push" class="ds-button">
-          ▲ Push Update
+          ▲ Push oppdatering
           <span id="pending-badge" class="hidden"></span>
         </button>
       </div>
@@ -54,8 +54,8 @@
 
     <!-- Add Player -->
     <div id="add-player-form" class="add-player-strip">
-      <input class="ds-input" type="text" id="add-player-name" placeholder="Player name…" autocomplete="off" />
-      <button id="btn-add-player" class="ds-button" data-variant="secondary">+ Add Player</button>
+      <input class="ds-input" type="text" id="add-player-name" placeholder="Spillernavn…" autocomplete="off" />
+      <button id="btn-add-player" class="ds-button" data-variant="secondary">+ Legg til spiller</button>
       <span id="add-player-error" class="add-player-error"></span>
     </div>
 
@@ -95,12 +95,12 @@
     </div>
 
     <div class="table-controls">
-      <input class="ds-input" type="text" id="search-input" placeholder="Search players…" />
+      <input class="ds-input" type="text" id="search-input" placeholder="Søk spillere…" />
       <span id="player-total" class="player-total">—</span>
     </div>
 
     <div id="loading-overlay" class="hidden">
-      <div class="ds-spinner" aria-label="Loading"></div>
+      <div class="ds-spinner" aria-label="Laster"></div>
     </div>
 
     <div class="table-wrap">
@@ -108,22 +108,22 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Name</th>
-            <th>Quiz Score</th>
-            <th>Live Score</th>
-            <th>Adjust Live Score</th>
+            <th>Navn</th>
+            <th>Quizpoeng</th>
+            <th>Live-poeng</th>
+            <th>Juster live-poeng</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="users-table-body">
-          <tr><td colspan="6"><div class="table-empty"><span class="icon">⏳</span>Loading players…</div></td></tr>
+          <tr><td colspan="6"><div class="table-empty"><span class="icon">⏳</span>Laster spillere…</div></td></tr>
         </tbody>
       </table>
     </div>
 
     <p class="help-text">
-      Adjust scores with the buttons — changes are <em>local</em> until you click
-      <strong>Push Update</strong>, which saves everything to Firestore instantly.
+      Juster poeng med knappene — endringer er <em>lokale</em> frem til du klikker
+      <strong>Push oppdatering</strong>, som lagrer alt til Firestore umiddelbart.
     </p>
 
   </section>

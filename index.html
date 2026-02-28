@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-color-scheme="dark">
+<html lang="no" data-color-scheme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Birthday Games — Leaderboard</title>
+  <title>Birthday Games — Resultattavle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&display=swap" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@digdir/designsystemet-css@1.12.1/dist/theme/designsystemet.css" />
@@ -19,11 +19,11 @@
   <header id="header">
     <div>
       <h1 class="gradient-text">🎂 Birthday Games</h1>
-      <div class="tagline">Live Leaderboards</div>
+      <div class="tagline">Live Resultattavler</div>
     </div>
     <div id="qr-section">
       <div id="qr-code"></div>
-      <div id="qr-label">Loading…</div>
+      <div id="qr-label">Laster…</div>
     </div>
   </header>
 
@@ -31,13 +31,13 @@
     <section class="board-panel board-quiz">
       <div class="board-panel-header">
         <div>
-          <div class="board-panel-title">🧠 Quiz Scores</div>
-          <div class="board-panel-subtitle">Speed &amp; accuracy</div>
+          <div class="board-panel-title">🧠 Quizpoeng</div>
+          <div class="board-panel-subtitle">Hastighet og nøyaktighet</div>
         </div>
         <div id="quiz-count" class="player-count">—</div>
       </div>
       <div id="quiz-list" class="board-list">
-        <div class="board-empty"><div class="empty-icon">⏳</div><p>Connecting…</p></div>
+        <div class="board-empty"><div class="empty-icon">⏳</div><p>Kobler til…</p></div>
       </div>
       <div id="last-updated">
         <span class="live-dot"></span>Live · <span id="last-updated-time">—</span>
@@ -47,13 +47,13 @@
     <section class="board-panel board-live">
       <div class="board-panel-header">
         <div>
-          <div class="board-panel-title">🎮 Live Games</div>
-          <div class="board-panel-subtitle">Updated by the host</div>
+          <div class="board-panel-title">🎮 Live-leker</div>
+          <div class="board-panel-subtitle">Oppdateres av verten</div>
         </div>
         <div id="live-count" class="player-count">—</div>
       </div>
       <div id="live-list" class="board-list">
-        <div class="board-empty"><div class="empty-icon">⏳</div><p>Connecting…</p></div>
+        <div class="board-empty"><div class="empty-icon">⏳</div><p>Kobler til…</p></div>
       </div>
     </section>
   </div>

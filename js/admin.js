@@ -81,7 +81,7 @@ function tryLogin() {
     showScreen("admin");
     loadPlayers();
   } else {
-    if (authError) authError.textContent = "Incorrect password. Try again.";
+    if (authError) authError.textContent = "Feil passord. Prøv igjen.";
     if (passwordInput) {
       passwordInput.value = "";
       passwordInput.focus();
@@ -111,7 +111,7 @@ async function loadPlayers() {
     updateTeamModeUI();
   } catch (err) {
     console.error("Load error:", err);
-    showStatus("Failed to load players. Check your Firebase config.", "error");
+    showStatus("Klarte ikke å laste spillere. Sjekk Firebase-konfigurasjonen.", "error");
   } finally {
     setLoading(false);
   }
@@ -119,7 +119,7 @@ async function loadPlayers() {
 
 // ===== RENDER TABLE =====
 function renderTable(data) {
-  if (playerTotalEl) playerTotalEl.textContent = `${data.length} player${data.length !== 1 ? "s" : ""}`;
+  if (playerTotalEl) playerTotalEl.textContent = `${data.length} spiller${data.length !== 1 ? "e" : ""}`;
 
   if (!tableBody) return;
 
@@ -129,7 +129,7 @@ function renderTable(data) {
         <td colspan="6">
           <div class="table-empty">
             <span class="icon">👥</span>
-            No players registered yet. Add one above!
+            Ingen spillere registrert ennå. Legg til én ovenfor!
           </div>
         </td>
       </tr>`;
@@ -237,7 +237,7 @@ async function pushChanges() {
   const changedIds = Object.keys(pendingChanges).filter((id) => pendingChanges[id] !== 0);
 
   if (changedIds.length === 0) {
-    showStatus("No changes to push.", "error");
+    showStatus("Ingen endringer å pushe.", "error");
     return;
   }
 
@@ -274,10 +274,10 @@ async function pushChanges() {
     const filtered = players.filter((p) => p.name.toLowerCase().includes(search));
     renderTable(filtered);
 
-    showStatus(`Successfully pushed ${changedIds.length} update${changedIds.length !== 1 ? "s" : ""} to leaderboard!`, "success");
+    showStatus(`${changedIds.length} oppdatering${changedIds.length !== 1 ? "er" : ""} lagt til resultattavlen!`, "success");
   } catch (err) {
     console.error("Push error:", err);
-    showStatus("Failed to push changes. Check your connection.", "error");
+    showStatus("Klarte ikke å pushe endringer. Sjekk tilkoblingen din.", "error");
   } finally {
     if (btnPush) btnPush.disabled = false;
   }
@@ -287,7 +287,7 @@ async function pushChanges() {
 if (btnRefresh) {
   btnRefresh.addEventListener("click", () => {
     if (Object.values(pendingChanges).some((d) => d !== 0)) {
-      if (!confirm("You have unsaved changes. Refresh anyway?")) return;
+      if (!confirm("Du har ulagrede endringer. Oppdatere likevel?")) return;
     }
     loadPlayers();
   });
@@ -415,7 +415,7 @@ async function startTeamMode() {
 }
 
 async function endTeamMode() {
-  if (!confirm("Avslutte lagspillet? TV-en bytter tilbake til leaderboardet.")) return;
+  if (!confirm("Avslutte lagspillet? TV-en bytter tilbake til resultattavlen.")) return;
   try {
     await setDoc(doc(db, "meta", "game"), { mode: "leaderboard", teams: [] });
     showStatus("Lagspillet er avsluttet.", "success");
@@ -514,18 +514,18 @@ if (addPlayerInput) {
 async function addPlayer() {
   const name = addPlayerInput ? addPlayerInput.value.trim() : "";
   if (!name) {
-    setAddError("Please enter a name.");
+    setAddError("Vennligst skriv inn et navn.");
     return;
   }
 
   // Check for duplicate name
   const duplicate = players.find((p) => p.name.toLowerCase() === name.toLowerCase());
   if (duplicate) {
-    setAddError(`"${name}" is already in the list.`);
+    setAddError(`"${name}" er allerede i listen.`);
     return;
   }
 
-  if (btnAddPlayer) { btnAddPlayer.disabled = true; btnAddPlayer.textContent = "Adding…"; }
+  if (btnAddPlayer) { btnAddPlayer.disabled = true; btnAddPlayer.textContent = "Legger til…"; }
   setAddError("");
 
   try {
@@ -543,14 +543,14 @@ async function addPlayer() {
     const search = searchInput ? searchInput.value.toLowerCase() : "";
     const filtered = players.filter((p) => p.name.toLowerCase().includes(search));
     renderTable(filtered);
-    if (playerTotalEl) playerTotalEl.textContent = `${players.length} player${players.length !== 1 ? "s" : ""}`;
+    if (playerTotalEl) playerTotalEl.textContent = `${players.length} spiller${players.length !== 1 ? "e" : ""}`;
 
-    showStatus(`"${name}" added successfully.`, "success");
+    showStatus(`"${name}" ble lagt til.`, "success");
   } catch (err) {
     console.error("Add player error:", err);
-    setAddError("Failed to add player. Check your connection.");
+    setAddError("Klarte ikke å legge til spiller. Sjekk tilkoblingen din.");
   } finally {
-    if (btnAddPlayer) { btnAddPlayer.disabled = false; btnAddPlayer.textContent = "+ Add Player"; }
+    if (btnAddPlayer) { btnAddPlayer.disabled = false; btnAddPlayer.textContent = "+ Legg til spiller"; }
   }
 }
 
@@ -560,7 +560,7 @@ function setAddError(msg) {
 
 // ===== DELETE PLAYER =====
 async function deletePlayer(id, name) {
-  if (!confirm(`Remove "${name}" from the game? This cannot be undone.`)) return;
+  if (!confirm(`Fjerne "${name}" fra spillet? Dette kan ikke angres.`)) return;
 
   try {
     await deleteDoc(doc(db, "users", id));
@@ -570,12 +570,12 @@ async function deletePlayer(id, name) {
     const search = searchInput ? searchInput.value.toLowerCase() : "";
     const filtered = players.filter((p) => p.name.toLowerCase().includes(search));
     renderTable(filtered);
-    if (playerTotalEl) playerTotalEl.textContent = `${players.length} player${players.length !== 1 ? "s" : ""}`;
+    if (playerTotalEl) playerTotalEl.textContent = `${players.length} spiller${players.length !== 1 ? "e" : ""}`;
     updatePendingBadge();
-    showStatus(`"${name}" removed.`, "success");
+    showStatus(`"${name}" er fjernet.`, "success");
   } catch (err) {
     console.error("Delete player error:", err);
-    showStatus("Failed to remove player. Try again.", "error");
+    showStatus("Klarte ikke å fjerne spiller. Prøv igjen.", "error");
   }
 }
 

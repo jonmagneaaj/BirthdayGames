@@ -42,9 +42,9 @@ function renderQR() {
       colorLight: "#ffffff",
       correctLevel: QRCode.CorrectLevel.M,
     });
-    document.getElementById("qr-label").textContent = "Scan to play!";
+    document.getElementById("qr-label").textContent = "Skann for å spille!";
   } else {
-    qrContainer.innerHTML = '<p style="font-size:0.7rem;color:#888;padding:8px;text-align:center">QR unavailable</p>';
+    qrContainer.innerHTML = '<p style="font-size:0.7rem;color:#888;padding:8px;text-align:center">QR utilgjengelig</p>';
   }
 }
 
@@ -79,13 +79,13 @@ function renderBoard(listEl, players, scoreField, prevMap, countEl) {
     listEl.innerHTML = `
       <div class="board-empty">
         <div class="empty-icon">👀</div>
-        <p>No players yet.<br>Waiting for the party to start!</p>
+        <p>Ingen spillere ennå.<br>Venter på at festen starter!</p>
       </div>`;
-    if (countEl) countEl.textContent = "0 players";
+    if (countEl) countEl.textContent = "0 spillere";
     return;
   }
 
-  if (countEl) countEl.textContent = `${players.length} player${players.length !== 1 ? "s" : ""}`;
+  if (countEl) countEl.textContent = `${players.length} spiller${players.length !== 1 ? "e" : ""}`;
 
   const html = players.map((player, idx) => {
     const rank = idx + 1;
@@ -160,7 +160,7 @@ function startListening() {
     },
     (err) => {
       console.error("Quiz leaderboard error:", err);
-      if (quizListEl) quizListEl.innerHTML = `<div class="board-empty"><p>Connection error. Retrying…</p></div>`;
+      if (quizListEl) quizListEl.innerHTML = `<div class="board-empty"><p>Tilkoblingsfeil. Prøver igjen…</p></div>`;
     }
   );
 
@@ -175,7 +175,7 @@ function startListening() {
     },
     (err) => {
       console.error("Live leaderboard error:", err);
-      if (liveListEl) liveListEl.innerHTML = `<div class="board-empty"><p>Connection error. Retrying…</p></div>`;
+      if (liveListEl) liveListEl.innerHTML = `<div class="board-empty"><p>Tilkoblingsfeil. Prøver igjen…</p></div>`;
     }
   );
 

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-color-scheme="dark">
+<html lang="no" data-color-scheme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Birthday Games — Play!</title>
+  <title>Birthday Games — Spill!</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&display=swap" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@digdir/designsystemet-css@1.12.1/dist/theme/designsystemet.css" />
@@ -24,18 +24,18 @@
   <section id="screen-register" class="screen">
     <div class="register-hero">
       <span class="hero-emoji">🎉</span>
-      <h1 class="gradient-text">Join the Party!</h1>
-      <p>10 questions · 30 seconds each · Answer fast for bonus points!</p>
+      <h1 class="gradient-text">Bli med på festen!</h1>
+      <p>10 spørsmål · 30 sekunder per spørsmål · Svar raskt for bonuspoeng!</p>
     </div>
 
     <div class="register-card">
       <div class="ds-field">
-        <label class="ds-label" for="player-name-input">Your name</label>
+        <label class="ds-label" for="player-name-input">Navnet ditt</label>
         <input
           class="ds-input"
           type="text"
           id="player-name-input"
-          placeholder="e.g. Sarah"
+          placeholder="f.eks. Kari"
           maxlength="30"
           autocomplete="off"
           autocorrect="off"
@@ -43,11 +43,11 @@
           spellcheck="false"
         />
       </div>
-      <button id="btn-register" class="ds-button" data-fullwidth>Let's Play!</button>
+      <button id="btn-register" class="ds-button" data-fullwidth>La oss spille!</button>
       <div id="register-error" class="error-msg hidden"></div>
     </div>
 
-    <p class="register-note">Up to 1 000 pts per question — faster = more points</p>
+    <p class="register-note">Opptil 1 000 poeng per spørsmål — raskere = mer poeng</p>
   </section>
 
   <!-- ===== QUIZ ===== -->
@@ -56,8 +56,8 @@
     <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
 
     <div id="quiz-stats">
-      <span id="question-counter">Question 1 / 10</span>
-      <span id="current-score-display">Score: 0</span>
+      <span id="question-counter">Spørsmål 1 / 10</span>
+      <span id="current-score-display">Poeng: 0</span>
     </div>
 
     <div id="timer-wrap">
@@ -82,32 +82,32 @@
   <section id="screen-results" class="screen">
     <div class="results-trophy">🏆</div>
     <div class="results-hero">
-      <h2>Quiz Complete!</h2>
+      <h2>Quiz fullført!</h2>
       <div class="final-score gradient-text" id="final-score">0</div>
-      <div class="score-label">points</div>
+      <div class="score-label">poeng</div>
     </div>
     <div class="results-breakdown">
       <div class="breakdown-row">
-        <span class="label">Correct answers</span>
+        <span class="label">Riktige svar</span>
         <span class="value" id="correct-count">—</span>
       </div>
       <div class="breakdown-row">
-        <span class="label">Avg. response time</span>
+        <span class="label">Gj.snitt svartid</span>
         <span class="value" id="avg-time">—</span>
       </div>
     </div>
-    <button id="btn-view-leaderboard" class="ds-button" data-fullwidth>View Leaderboard →</button>
-    <p class="results-note">Your score is saved — check the big screen for your rank!</p>
+    <button id="btn-view-leaderboard" class="ds-button" data-fullwidth>Se resultattavlen →</button>
+    <p class="results-note">Poengsummen din er lagret — sjekk storskjermen for plassering!</p>
   </section>
 
   <!-- ===== ALREADY PLAYED ===== -->
   <section id="screen-done" class="screen">
     <div class="hero-emoji">✅</div>
-    <h2>You've already played!</h2>
-    <p>Your score:</p>
+    <h2>Du har allerede spilt!</h2>
+    <p>Poengsummen din:</p>
     <div id="done-score" class="final-score gradient-text">0</div>
-    <p class="results-note">Check the TV screen to see your leaderboard position.</p>
-    <button class="ds-button" data-fullwidth onclick="window.location.href='index.html'">View Leaderboard →</button>
+    <p class="results-note">Sjekk TV-skjermen for å se plasseringen din.</p>
+    <button class="ds-button" data-fullwidth onclick="window.location.href='index.html'">Se resultattavlen →</button>
   </section>
 
 </div>

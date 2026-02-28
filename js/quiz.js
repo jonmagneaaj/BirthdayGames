@@ -74,7 +74,7 @@ async function loadQuestions() {
   const snapshot = await getDocs(collection(db, "questions"));
   allQuestions = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   if (allQuestions.length === 0) {
-    showError("No questions found! Ask the host to add questions first.");
+    showError("Ingen spørsmål funnet! Be verten om å legge til spørsmål først.");
     throw new Error("No questions in Firestore");
   }
 }
@@ -163,8 +163,8 @@ function loadQuestion(idx) {
   if (progressBar) progressBar.style.width = progress + "%";
 
   // Update counter
-  if (questionCounter) questionCounter.textContent = `Question ${idx + 1} / ${QUESTIONS_PER_GAME}`;
-  if (currentScoreDisplay) currentScoreDisplay.textContent = `Score: ${totalScore.toLocaleString()}`;
+  if (questionCounter) questionCounter.textContent = `Spørsmål ${idx + 1} / ${QUESTIONS_PER_GAME}`;
+  if (currentScoreDisplay) currentScoreDisplay.textContent = `Poeng: ${totalScore.toLocaleString()}`;
 
   // Set question text
   if (questionText) questionText.textContent = q.question;
@@ -277,7 +277,7 @@ function handleTimeout() {
 function showPointsToast(points, isCorrect) {
   if (!pointsToast) return;
 
-  pointsToast.textContent = isCorrect ? `+${points.toLocaleString()}` : "✗ No points";
+  pointsToast.textContent = isCorrect ? `+${points.toLocaleString()}` : "✗ Ingen poeng";
   pointsToast.classList.remove("wrong-toast");
   if (!isCorrect) pointsToast.classList.add("wrong-toast");
 
@@ -348,15 +348,15 @@ async function handleRegister() {
   const name = nameInput ? nameInput.value.trim() : "";
 
   if (!name) {
-    showError("Please enter your name.");
+    showError("Vennligst skriv inn navnet ditt.");
     return;
   }
   if (name.length < 2) {
-    showError("Name must be at least 2 characters.");
+    showError("Navnet må ha minst 2 tegn.");
     return;
   }
   if (name.length > 30) {
-    showError("Name too long (max 30 characters).");
+    showError("Navnet er for langt (maks 30 tegn).");
     return;
   }
 
@@ -367,7 +367,7 @@ async function handleRegister() {
     await registerPlayer(name);
   } catch (err) {
     console.error("Registration error:", err);
-    showError("Something went wrong. Check your Firebase config and try again.");
+    showError("Noe gikk galt. Sjekk tilkoblingen og prøv igjen.");
     setLoading(false);
   }
 }
@@ -375,7 +375,7 @@ async function handleRegister() {
 function setLoading(loading) {
   if (btnRegister) {
     btnRegister.disabled = loading;
-    btnRegister.textContent = loading ? "Loading…" : "Let's Play!";
+    btnRegister.textContent = loading ? "Laster…" : "La oss spille!";
   }
 }
 
