@@ -75,10 +75,12 @@ body {
 }
 
 /* ===== PANELS WRAPPER ===== */
+/* Both #panels and #screen-teams live in grid-row 2; only one is visible at a time */
+#panels, #screen-teams { grid-row: 2; min-height: 0; }
+
 #panels {
   display: flex;
   gap: 24px;
-  min-height: 0;
 }
 
 #panels .board-panel {

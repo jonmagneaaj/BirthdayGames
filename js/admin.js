@@ -78,6 +78,7 @@ function tryLogin() {
   const pw = passwordInput ? passwordInput.value : "";
   if (pw === ADMIN_PASSWORD) {
     authError && (authError.textContent = "");
+    localStorage.setItem("bgAuth", "1");
     showScreen("admin");
     loadPlayers();
   } else {
@@ -599,5 +600,10 @@ function escapeHtml(str) {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
-  showScreen("auth");
+  if (localStorage.getItem("bgAuth") === "1") {
+    showScreen("admin");
+    loadPlayers();
+  } else {
+    showScreen("auth");
+  }
 });

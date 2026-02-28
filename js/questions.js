@@ -236,6 +236,7 @@ authInput && authInput.addEventListener("keydown", (e) => { if (e.key === "Enter
 function tryLogin() {
   if (authInput.value === ADMIN_PASSWORD) {
     authError.textContent = "";
+    localStorage.setItem("bgAuth", "1");
     screenAuth.classList.remove("active");
     screenMain.classList.add("active");
     loadQuestions();
@@ -441,7 +442,13 @@ function escapeHtml(str) {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
-  screenAuth.classList.add("active");
+  if (localStorage.getItem("bgAuth") === "1") {
+    screenMain.classList.add("active");
+    loadQuestions();
+    showRandomInspiration();
+  } else {
+    screenAuth.classList.add("active");
+  }
   selectedAnswerCount = 4;
   selectedCorrect = 0;
   renderAnswerInputs();
