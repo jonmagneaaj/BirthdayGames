@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:jonmagneaaj.github.io)",
+      "WebFetch(domain:www.designsystem.no)",
+      "WebFetch(domain:designsystemet.no)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:unpkg.com)",
+      "WebFetch(domain:app.unpkg.com)",
+      "WebFetch(domain:storybook.designsystemet.no)",
+      "WebFetch(domain:cdn.jsdelivr.net)"
+    ]
+  }
+}
