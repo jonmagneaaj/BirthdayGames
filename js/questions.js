@@ -286,7 +286,7 @@ function renderAnswerInputs() {
   answersForm.innerHTML = Array.from({ length: selectedAnswerCount }, (_, i) => `
     <div class="answer-row" data-index="${i}">
       <span class="answer-row-label">${labels[i]}</span>
-      <input type="text" class="answer-input" placeholder="Answer ${labels[i]}…" data-index="${i}" />
+      <input type="text" class="ds-input answer-input" placeholder="Answer ${labels[i]}…" data-index="${i}" />
       <div class="correct-radio-wrap${i === selectedCorrect ? " selected" : ""}" data-index="${i}" title="Mark as correct answer">
         <input type="radio" name="correct" value="${i}" ${i === selectedCorrect ? "checked" : ""} />
         <div class="radio-dot"></div>

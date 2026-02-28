@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-color-scheme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Birthday Games — Play!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&display=swap" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@digdir/designsystemet-css@1.12.1/dist/theme/designsystemet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@digdir/designsystemet-css@1.12.1/dist/src/index.css" />
   <link rel="stylesheet" href="css/shared.css" />
   <link rel="stylesheet" href="css/play.css" />
 </head>
@@ -11,24 +15,24 @@
 
 <div id="app">
 
-  <!-- Top bar -->
   <div id="top-bar">
-    <span class="logo">🎂 Birthday Games</span>
+    <span class="logo gradient-text">🎂 Birthday Games</span>
     <span id="player-display"></span>
   </div>
 
-  <!-- ===== REGISTER SCREEN ===== -->
+  <!-- ===== REGISTER ===== -->
   <section id="screen-register" class="screen">
     <div class="register-hero">
-      <span class="emoji">🎉</span>
-      <h1>Join the Party!</h1>
-      <p>Enter your name to start the quiz.<br>10 questions, 30 seconds each. Go fast for bonus points!</p>
+      <span class="hero-emoji">🎉</span>
+      <h1 class="gradient-text">Join the Party!</h1>
+      <p>10 questions · 30 seconds each · Answer fast for bonus points!</p>
     </div>
 
-    <div class="card">
-      <div class="name-input-wrap">
-        <label for="player-name-input">Your name</label>
+    <div class="register-card">
+      <div class="ds-field">
+        <label class="ds-label" for="player-name-input">Your name</label>
         <input
+          class="ds-input"
           type="text"
           id="player-name-input"
           placeholder="e.g. Sarah"
@@ -39,23 +43,17 @@
           spellcheck="false"
         />
       </div>
-      <br />
-      <button id="btn-register">Let's Play!</button>
+      <button id="btn-register" class="ds-button" data-fullwidth>Let's Play!</button>
       <div id="register-error" class="error-msg hidden"></div>
     </div>
 
-    <p class="register-note">
-      Scoring: up to 1,000 pts per question.<br>
-      Faster answers = more points!
-    </p>
+    <p class="register-note">Up to 1 000 pts per question — faster = more points</p>
   </section>
 
-  <!-- ===== QUIZ SCREEN ===== -->
+  <!-- ===== QUIZ ===== -->
   <section id="screen-quiz" class="screen">
 
-    <div id="progress-bar-wrap">
-      <div id="progress-bar" style="width: 0%"></div>
-    </div>
+    <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
 
     <div id="quiz-stats">
       <span id="question-counter">Question 1 / 10</span>
@@ -66,31 +64,28 @@
       <div id="timer-ring-wrap">
         <svg id="timer-svg" viewBox="0 0 72 72">
           <circle id="timer-ring-bg" cx="36" cy="36" r="30" />
-          <circle id="timer-ring" cx="36" cy="36" r="30" />
+          <circle id="timer-ring"    cx="36" cy="36" r="30" />
         </svg>
         <div id="timer-text">30</div>
       </div>
     </div>
 
     <div id="question-card">
-      <div id="question-text"></div>
+      <p id="question-text"></p>
     </div>
 
     <div id="answers-grid"></div>
 
   </section>
 
-  <!-- ===== RESULTS SCREEN ===== -->
+  <!-- ===== RESULTS ===== -->
   <section id="screen-results" class="screen">
-
     <div class="results-trophy">🏆</div>
-
     <div class="results-hero">
       <h2>Quiz Complete!</h2>
-      <div class="final-score" id="final-score">0</div>
+      <div class="final-score gradient-text" id="final-score">0</div>
       <div class="score-label">points</div>
     </div>
-
     <div class="results-breakdown">
       <div class="breakdown-row">
         <span class="label">Correct answers</span>
@@ -101,32 +96,22 @@
         <span class="value" id="avg-time">—</span>
       </div>
     </div>
-
-    <button id="btn-view-leaderboard">View Leaderboard →</button>
-
-    <p class="results-note">
-      Your score has been saved.<br>Check the big screen to see your ranking!
-    </p>
-
+    <button id="btn-view-leaderboard" class="ds-button" data-fullwidth>View Leaderboard →</button>
+    <p class="results-note">Your score is saved — check the big screen for your rank!</p>
   </section>
 
-  <!-- ===== ALREADY PLAYED SCREEN ===== -->
+  <!-- ===== ALREADY PLAYED ===== -->
   <section id="screen-done" class="screen">
-    <div class="emoji">✅</div>
+    <div class="hero-emoji">✅</div>
     <h2>You've already played!</h2>
-    <p>Your quiz score:</p>
-    <div id="done-score">0</div>
-    <p style="color: var(--color-text-dim); font-size: 0.85rem;">
-      Check the TV screen to see your ranking on the leaderboard.
-    </p>
-    <button id="btn-view-leaderboard-done" onclick="window.location.href='index.html'">
-      View Leaderboard →
-    </button>
+    <p>Your score:</p>
+    <div id="done-score" class="final-score gradient-text">0</div>
+    <p class="results-note">Check the TV screen to see your leaderboard position.</p>
+    <button class="ds-button" data-fullwidth onclick="window.location.href='index.html'">View Leaderboard →</button>
   </section>
 
 </div>
 
-<!-- Points toast overlay -->
 <div id="points-toast"></div>
 
 <script type="module" src="js/quiz.js"></script>

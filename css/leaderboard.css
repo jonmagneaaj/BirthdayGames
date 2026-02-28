@@ -3,6 +3,7 @@
 body {
   overflow: hidden;
   background: var(--color-bg);
+  font-family: 'Nunito Sans', sans-serif;
 }
 
 /* Main layout: two boards side by side */

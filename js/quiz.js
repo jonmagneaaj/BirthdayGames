@@ -24,6 +24,7 @@ let totalScore = 0;
 let timerInterval = null;
 let secondsElapsed = 0;
 let answerLocked = false;
+let currentCorrectIdx = 0;
 let userId = null;
 let playerName = "";
 let questionResults = [];
@@ -86,6 +87,16 @@ function shuffle(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+// ===== SHUFFLE ANSWERS (tracks where correct answer lands) =====
+function shuffleAnswers(answers, correctIdx) {
+  const tagged = answers.map((a, i) => ({ a, isCorrect: i === correctIdx }));
+  const shuffled = shuffle(tagged);
+  return {
+    answers: shuffled.map(t => t.a),
+    correctIdx: shuffled.findIndex(t => t.isCorrect),
+  };
 }
 
 // ===== REGISTRATION =====
@@ -158,9 +169,13 @@ function loadQuestion(idx) {
   // Set question text
   if (questionText) questionText.textContent = q.question;
 
+  // Shuffle answer positions for this question
+  const { answers: shuffledAnswers, correctIdx } = shuffleAnswers(q.answers, q.correct);
+  currentCorrectIdx = correctIdx;
+
   // Render answer buttons
   if (answersGrid) {
-    answersGrid.innerHTML = q.answers.map((ans, i) => `
+    answersGrid.innerHTML = shuffledAnswers.map((ans, i) => `
       <button class="answer-btn" data-index="${i}">${escapeHtml(ans)}</button>
     `).join("");
 
@@ -218,8 +233,7 @@ function handleAnswer(selectedIdx) {
   answerLocked = true;
   clearInterval(timerInterval);
 
-  const q = gameQuestions[currentQuestionIdx];
-  const isCorrect = selectedIdx === q.correct;
+  const isCorrect = selectedIdx === currentCorrectIdx;
 
   let pointsEarned = 0;
   if (isCorrect) {
@@ -233,7 +247,7 @@ function handleAnswer(selectedIdx) {
   const btns = answersGrid.querySelectorAll(".answer-btn");
   btns.forEach((btn, i) => {
     btn.disabled = true;
-    if (i === q.correct) btn.classList.add("correct");
+    if (i === currentCorrectIdx) btn.classList.add("correct");
     else if (i === selectedIdx && !isCorrect) btn.classList.add("wrong");
   });
 
@@ -248,13 +262,12 @@ function handleTimeout() {
   if (answerLocked) return;
   answerLocked = true;
 
-  const q = gameQuestions[currentQuestionIdx];
   questionResults.push({ isCorrect: false, secondsElapsed: SECONDS_PER_QUESTION });
 
   const btns = answersGrid ? answersGrid.querySelectorAll(".answer-btn") : [];
   btns.forEach((btn, i) => {
     btn.disabled = true;
-    if (i === q.correct) btn.classList.add("correct");
+    if (i === currentCorrectIdx) btn.classList.add("correct");
   });
 
   showPointsToast(0, false);
