@@ -9,7 +9,10 @@
       "WebFetch(domain:unpkg.com)",
       "WebFetch(domain:app.unpkg.com)",
       "WebFetch(domain:storybook.designsystemet.no)",
-      "WebFetch(domain:cdn.jsdelivr.net)"
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "Bash(git add js/quiz.js play.html css/play.css leaderboard-mobil.html js/leaderboard-mobil.js css/leaderboard-mobil.css && git status)",
+      "Bash(git commit -m \"$\\(cat <<'EOF'\nAdd replay support, mobile leaderboard, name autocomplete, and finer scoring\n\n- Allow unlimited quiz replays; Firestore score only updated on new high\n- Post-quiz results show high-score feedback and \"Spill igjen\" button\n- Name suggestions list loaded from Firestore with localStorage pre-fill\n- Scoring penalty reduced from 10→1 pt/sec \\(scores: 999, 998, 997…\\)\n- New mobile leaderboard page with quiz/live tab toggle and team view\n- Leaderboard link added to register screen\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git add js/quiz.js play.html css/play.css && git status)"
     ]
   }
 }
