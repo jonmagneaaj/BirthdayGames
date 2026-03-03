@@ -14,18 +14,18 @@ import {
 
 // ===== CONSTANTS =====
 const QUESTIONS_PER_GAME  = 10;
-const TIMER_TICKS_TOTAL   = 300;  // 30 seconds × 10 ticks/second
-const TIMER_INTERVAL_MS   = 100;  // 100ms per tick → -1 point per tick
+const QUESTION_DURATION_MS = 30_000; // 30 seconds in ms
+const TICK_MS             = 100;     // scoring granularity: 1 point per 100ms
 const SCORE_PER_CORRECT   = 1000;
 
 // ===== STATE =====
-let allQuestions      = [];
-let gameQuestions     = [];
+let allQuestions       = [];
+let gameQuestions      = [];
 let currentQuestionIdx = 0;
-let totalScore        = 0;
-let timerInterval     = null;
-let ticksElapsed      = 0;
-let answerLocked      = false;
+let totalScore         = 0;
+let timerInterval      = null;
+let questionStartTime  = 0;  // performance.now() snapshot — avoids setInterval throttle
+let answerLocked       = false;
 let currentCorrectIdx = 0;
 let userId            = null;
 let playerName        = "";
@@ -57,6 +57,7 @@ const finalScoreEl     = document.getElementById("final-score");
 const correctCountEl   = document.getElementById("correct-count");
 const avgTimeEl        = document.getElementById("avg-time");
 const highScoreMsg     = document.getElementById("high-score-msg");
+const resultsNote      = document.getElementById("results-note");
 const btnViewLeaderboard = document.getElementById("btn-view-leaderboard");
 const btnPlayAgain     = document.getElementById("btn-play-again");
 
@@ -247,8 +248,8 @@ function startQuiz() {
 // ===== LOAD QUESTION =====
 function loadQuestion(idx) {
   clearInterval(timerInterval);
-  answerLocked  = false;
-  ticksElapsed  = 0;
+  answerLocked     = false;
+  questionStartTime = 0;
 
   const q        = gameQuestions[idx];
   const progress = (idx / QUESTIONS_PER_GAME) * 100;
@@ -275,29 +276,36 @@ function loadQuestion(idx) {
 }
 
 // ===== TIMER =====
-const CIRCUMFERENCE = 188.5; // 2 * PI * 30 (radius)
+const CIRCUMFERENCE    = 188.5; // 2 * PI * 30 (radius)
+const TOTAL_TICKS      = QUESTION_DURATION_MS / TICK_MS; // 300
+
+// Returns ticks elapsed based on real wall-clock time, immune to setInterval throttling.
+function getTicksElapsed() {
+  if (!questionStartTime) return 0;
+  return Math.min(TOTAL_TICKS, Math.floor((performance.now() - questionStartTime) / TICK_MS));
+}
 
 function startTimer() {
-  ticksElapsed = 0;
-  updateTimerDisplay(TIMER_TICKS_TOTAL);
+  questionStartTime = performance.now();
+  updateTimerDisplay(TOTAL_TICKS);
 
   timerInterval = setInterval(() => {
-    ticksElapsed++;
-    const remainingTicks = TIMER_TICKS_TOTAL - ticksElapsed;
-    updateTimerDisplay(remainingTicks);
+    const ticks     = getTicksElapsed();
+    const remaining = TOTAL_TICKS - ticks;
+    updateTimerDisplay(remaining);
 
-    if (remainingTicks <= 0) {
+    if (ticks >= TOTAL_TICKS) {
       clearInterval(timerInterval);
       handleTimeout();
     }
-  }, TIMER_INTERVAL_MS);
+  }, 50); // 50ms refresh: smooth ring animation, real timing from performance.now()
 }
 
 function updateTimerDisplay(remainingTicks) {
   if (timerText) timerText.textContent = Math.ceil(remainingTicks / 10);
 
   if (timerRing) {
-    const fraction = remainingTicks / TIMER_TICKS_TOTAL;
+    const fraction = remainingTicks / TOTAL_TICKS;
     const offset   = CIRCUMFERENCE * (1 - fraction);
     timerRing.style.strokeDashoffset = offset;
 
@@ -315,14 +323,16 @@ function handleAnswer(selectedIdx) {
 
   const isCorrect = selectedIdx === currentCorrectIdx;
 
+  const ticks = getTicksElapsed(); // real elapsed ticks at moment of answer
+
   let pointsEarned = 0;
   if (isCorrect) {
-    // -1 point per tick (0.1 second), max 1000, min 700 (at 30s)
-    pointsEarned = Math.max(0, SCORE_PER_CORRECT - ticksElapsed);
+    // -1 point per 100ms: 1000→700 over 30s, finer than any setInterval approach
+    pointsEarned = Math.max(0, SCORE_PER_CORRECT - ticks);
     totalScore += pointsEarned;
   }
 
-  questionResults.push({ isCorrect, secondsElapsed: ticksElapsed / 10 });
+  questionResults.push({ isCorrect, secondsElapsed: ticks / 10 });
 
   const btns = answersGrid.querySelectorAll(".answer-btn");
   btns.forEach((btn, i) => {
@@ -339,7 +349,7 @@ function handleTimeout() {
   if (answerLocked) return;
   answerLocked = true;
 
-  questionResults.push({ isCorrect: false, secondsElapsed: TIMER_TICKS_TOTAL / 10 });
+  questionResults.push({ isCorrect: false, secondsElapsed: QUESTION_DURATION_MS / 1000 });
 
   const btns = answersGrid ? answersGrid.querySelectorAll(".answer-btn") : [];
   btns.forEach((btn, i) => {
@@ -413,6 +423,12 @@ async function finishQuiz() {
   }
 
   if (isNewHighScore) previousBestScore = totalScore;
+
+  if (resultsNote) {
+    resultsNote.textContent = isNewHighScore
+      ? "Ny rekord lagret! Sjekk storskjermen for plasseringen din."
+      : "Sjekk storskjermen for plasseringen din.";
+  }
 
   showScreen("results");
 }

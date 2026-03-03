@@ -1,6 +1,6 @@
 /* ===== MOBILE LEADERBOARD ===== */
 
-body { min-height: 100vh; }
+body { min-height: 100dvh; }
 
 #app {
   max-width: 480px;
