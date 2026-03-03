@@ -129,6 +129,7 @@ function showTeams(teams) {
 
   if (!teamGridEl || !teams || teams.length === 0) return;
 
+  teamGridEl.dataset.count = teams.length;
   teamGridEl.innerHTML = teams.map((team) => {
     const playerNames = (team.playerIds || [])
       .map((id) => {

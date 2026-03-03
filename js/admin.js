@@ -20,8 +20,14 @@ import {
 const ADMIN_PASSWORD = "12345";
 
 // ===== CONSTANTS =====
-const TEAM_COLORS = ["#e94560", "#4fc3f7", "#81c784", "#ffb74d", "#ce93d8", "#80cbc4"];
-const TEAM_NAMES  = ["Lag 1", "Lag 2", "Lag 3", "Lag 4", "Lag 5", "Lag 6"];
+const TEAM_COLORS = [
+  "#e94560", "#4fc3f7", "#81c784", "#ffb74d",
+  "#ce93d8", "#80cbc4", "#ff8a65", "#f9a825", "#90caf9", "#ef9a9a",
+];
+const TEAM_NAMES = [
+  "Lag 1","Lag 2","Lag 3","Lag 4","Lag 5",
+  "Lag 6","Lag 7","Lag 8","Lag 9","Lag 10",
+];
 
 // ===== STATE =====
 let players = [];        // Array of { id, name, quizScore, liveScore }
@@ -153,17 +159,17 @@ function renderTable(data) {
         </td>
         <td class="td-controls">
           <div class="score-controls">
-            <button class="score-btn plus" data-id="${player.id}" data-delta="50">+50</button>
-            <button class="score-btn plus" data-id="${player.id}" data-delta="10">+10</button>
-            <button class="score-btn minus" data-id="${player.id}" data-delta="-10">−10</button>
+            <button class="score-btn plus" data-id="${player.id}" data-delta="3">+3</button>
+            <button class="score-btn plus" data-id="${player.id}" data-delta="1">+1</button>
+            <button class="score-btn minus" data-id="${player.id}" data-delta="-1">−1</button>
             <div class="custom-input-wrap">
               <input type="number" class="custom-score-input" data-id="${player.id}" placeholder="0" />
-              <button class="score-btn apply" data-id="${player.id}">Apply</button>
+              <button class="score-btn apply" data-id="${player.id}">Ok</button>
             </div>
           </div>
         </td>
         <td class="td-delete">
-          <button class="btn-delete-player" data-id="${player.id}" data-name="${escapeHtml(player.name)}">Remove</button>
+          <button class="btn-delete-player" data-id="${player.id}" data-name="${escapeHtml(player.name)}">✕</button>
         </td>
       </tr>`;
   }).join("");
@@ -483,6 +489,12 @@ function renderTeamAwardCards() {
       <div class="team-award-card" style="border-top-color: ${team.color}">
         <div class="team-award-name" style="color: ${team.color}">${escapeHtml(team.name)}</div>
         <div class="team-award-members">${escapeHtml(memberNames)}</div>
+        <div class="team-pts-quick">
+          <button class="score-btn plus team-pts-quick-btn" data-team="${i}" data-pts="1">+1</button>
+          <button class="score-btn plus team-pts-quick-btn" data-team="${i}" data-pts="3">+3</button>
+          <button class="score-btn plus team-pts-quick-btn" data-team="${i}" data-pts="5">+5</button>
+          <button class="score-btn plus team-pts-quick-btn" data-team="${i}" data-pts="10">+10</button>
+        </div>
         <div class="team-pts-row">
           <input type="number" class="custom-score-input team-pts-input" data-team="${i}" placeholder="0" min="0" />
           <span class="team-pts-label">poeng</span>
@@ -496,6 +508,17 @@ function renderTeamAwardCards() {
       <button id="btn-award-and-end" class="ds-button">✓ Gi poeng &amp; Avslutt lagspill</button>
       <button id="btn-end-no-pts" class="ds-button" data-variant="secondary">Avslutt uten poeng</button>
     </div>`;
+
+  teamAwardCards.querySelectorAll(".team-pts-quick-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const teamIdx = btn.dataset.team;
+      const input = teamAwardCards.querySelector(`.team-pts-input[data-team="${teamIdx}"]`);
+      if (input) input.value = btn.dataset.pts;
+      // Highlight active quick button within this card
+      btn.closest(".team-pts-quick").querySelectorAll(".team-pts-quick-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
 
   document.getElementById("btn-award-and-end")?.addEventListener("click", awardAllAndEnd);
   document.getElementById("btn-end-no-pts")?.addEventListener("click", endTeamMode);
