@@ -92,7 +92,7 @@ async function loadExistingPlayers() {
     const snapshot = await getDocs(
       query(collection(db, "users"), orderBy("name"), limit(100))
     );
-    allPlayers = snapshot.docs.map((d) => ({ id: d.id, name: d.data().name }));
+    allPlayers = snapshot.docs.map((d) => ({ id: d.id, name: d.data().name, quizScore: d.data().quizScore || 0 }));
   } catch (err) {
     console.warn("Could not load players for autocomplete:", err);
     allPlayers = [];
@@ -263,6 +263,7 @@ function loadQuestion(idx) {
   currentCorrectIdx = correctIdx;
 
   if (answersGrid) {
+    answersGrid.dataset.count = shuffledAnswers.length;
     answersGrid.innerHTML = shuffledAnswers.map((ans, i) => `
       <button class="answer-btn" data-index="${i}">${escapeHtml(ans)}</button>
     `).join("");
@@ -430,7 +431,19 @@ async function finishQuiz() {
       : "Sjekk storskjermen for plasseringen din.";
   }
 
+  // Check for #1 place (compare against all other players' best scores)
+  const otherBest = allPlayers
+    .filter(p => p.id !== userId)
+    .reduce((max, p) => Math.max(max, p.quizScore || 0), 0);
+  const isNumber1 = isNewHighScore && totalScore > otherBest;
+
   showScreen("results");
+
+  if (isNumber1) {
+    setTimeout(() => triggerNumber1Celebration(), 600);
+  } else if (isNewHighScore) {
+    setTimeout(() => triggerHighScorePulse(), 300);
+  }
 }
 
 // ===== VIEW LEADERBOARD =====
@@ -490,6 +503,44 @@ function showError(msg) {
 
 function hideError() {
   if (errorMsg) errorMsg.classList.add("hidden");
+}
+
+// ===== CELEBRATION =====
+function triggerNumber1Celebration() {
+  const overlay = document.getElementById("celebration-overlay");
+  if (!overlay) return;
+
+  const container = document.getElementById("confetti-container");
+  if (container) {
+    container.innerHTML = "";
+    const colors = ["#ffd700", "#ff6b6b", "#4fc3f7", "#81c784", "#ffb74d", "#ce93d8", "#f06292"];
+    for (let i = 0; i < 70; i++) {
+      const piece = document.createElement("div");
+      piece.className = "confetti-piece";
+      piece.style.left          = Math.random() * 100 + "vw";
+      piece.style.background    = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.width         = (7 + Math.random() * 9) + "px";
+      piece.style.height        = (7 + Math.random() * 9) + "px";
+      piece.style.borderRadius  = Math.random() > 0.4 ? "50%" : "3px";
+      piece.style.animationDuration = (1.8 + Math.random() * 2.2) + "s";
+      piece.style.animationDelay   = (Math.random() * 1.8) + "s";
+      container.appendChild(piece);
+    }
+  }
+
+  const scoreEl = document.getElementById("celebration-score");
+  if (scoreEl) scoreEl.textContent = totalScore.toLocaleString() + " poeng";
+
+  overlay.classList.remove("hidden");
+  overlay.addEventListener("click", () => overlay.classList.add("hidden"), { once: true });
+  setTimeout(() => overlay.classList.add("hidden"), 5000);
+}
+
+function triggerHighScorePulse() {
+  if (finalScoreEl) {
+    finalScoreEl.classList.add("glow-new-high");
+    setTimeout(() => finalScoreEl.classList.remove("glow-new-high"), 4000);
+  }
 }
 
 // ===== UTILS =====
