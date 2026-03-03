@@ -35,20 +35,16 @@
           class="ds-input"
           type="text"
           id="player-name-input"
-          placeholder="f.eks. Kari"
+          placeholder="Trykk for å velge navn…"
           maxlength="30"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="words"
-          spellcheck="false"
+          readonly
         />
-        <div id="name-suggestions"></div>
       </div>
       <button id="btn-register" class="ds-button" data-fullwidth>La oss spille!</button>
       <div id="register-error" class="error-msg hidden"></div>
     </div>
 
-    <a href="leaderboard-mobil.html" class="leaderboard-link">📊 Se resultattavlen</a>
+    <a href="leaderboard-mobil.html" class="ds-button" data-variant="secondary" data-fullwidth id="btn-leaderboard-link">📊 Se resultattavlen</a>
     <p class="register-note">Opptil 1 000 poeng per spørsmål — raskere = mer poeng</p>
   </section>
 
@@ -99,14 +95,34 @@
         <span class="value" id="avg-time">—</span>
       </div>
     </div>
-    <button id="btn-view-leaderboard" class="ds-button" data-fullwidth>Se resultattavlen →</button>
-    <button id="btn-play-again" class="ds-button" data-variant="secondary" data-fullwidth>Spill igjen →</button>
+    <button id="btn-play-again" class="ds-button" data-fullwidth>Spill igjen →</button>
+    <button id="btn-view-leaderboard" class="ds-button" data-variant="secondary" data-fullwidth>Se resultattavlen →</button>
     <p class="results-note">Poengsummen din er lagret — sjekk storskjermen for plassering!</p>
   </section>
 
 </div>
 
 <div id="points-toast"></div>
+
+<!-- ===== NAME SEARCH OVERLAY ===== -->
+<div id="name-search-overlay" class="hidden">
+  <div id="name-search-bar">
+    <button id="btn-search-back" class="search-back-btn" aria-label="Tilbake">←</button>
+    <input
+      class="ds-input"
+      type="text"
+      id="name-search-input"
+      placeholder="Skriv inn navnet ditt…"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="words"
+      spellcheck="false"
+      maxlength="30"
+    />
+  </div>
+  <button id="btn-search-play" class="ds-button" data-fullwidth>La oss spille!</button>
+  <div id="name-search-list"></div>
+</div>
 
 <script type="module" src="js/quiz.js"></script>
 </body>

@@ -13,67 +13,69 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ===== CONSTANTS =====
-const QUESTIONS_PER_GAME = 10;
-const SECONDS_PER_QUESTION = 30;
-const SCORE_PER_CORRECT = 1000;
-const SCORE_PENALTY_PER_SECOND = 1; // points lost per second elapsed
+const QUESTIONS_PER_GAME  = 10;
+const TIMER_TICKS_TOTAL   = 300;  // 30 seconds × 10 ticks/second
+const TIMER_INTERVAL_MS   = 100;  // 100ms per tick → -1 point per tick
+const SCORE_PER_CORRECT   = 1000;
 
 // ===== STATE =====
-let allQuestions = [];
-let gameQuestions = [];
+let allQuestions      = [];
+let gameQuestions     = [];
 let currentQuestionIdx = 0;
-let totalScore = 0;
-let timerInterval = null;
-let secondsElapsed = 0;
-let answerLocked = false;
+let totalScore        = 0;
+let timerInterval     = null;
+let ticksElapsed      = 0;
+let answerLocked      = false;
 let currentCorrectIdx = 0;
-let userId = null;
-let playerName = "";
-let questionResults = [];
+let userId            = null;
+let playerName        = "";
+let questionResults   = [];
 let previousBestScore = 0;
-let allPlayers = []; // for name autocomplete
+let allPlayers        = [];
 
 // ===== DOM REFS =====
 const screens = {
   register: document.getElementById("screen-register"),
-  quiz: document.getElementById("screen-quiz"),
-  results: document.getElementById("screen-results"),
+  quiz:     document.getElementById("screen-quiz"),
+  results:  document.getElementById("screen-results"),
 };
 
-const nameInput = document.getElementById("player-name-input");
-const nameSuggestions = document.getElementById("name-suggestions");
-const btnRegister = document.getElementById("btn-register");
-const errorMsg = document.getElementById("register-error");
+const nameInput        = document.getElementById("player-name-input");
+const btnRegister      = document.getElementById("btn-register");
+const errorMsg         = document.getElementById("register-error");
 
-const progressBar = document.getElementById("progress-bar");
-const questionCounter = document.getElementById("question-counter");
+const progressBar      = document.getElementById("progress-bar");
+const questionCounter  = document.getElementById("question-counter");
 const currentScoreDisplay = document.getElementById("current-score-display");
-const questionText = document.getElementById("question-text");
-const answersGrid = document.getElementById("answers-grid");
-const timerText = document.getElementById("timer-text");
-const timerRing = document.getElementById("timer-ring");
-const pointsToast = document.getElementById("points-toast");
+const questionText     = document.getElementById("question-text");
+const answersGrid      = document.getElementById("answers-grid");
+const timerText        = document.getElementById("timer-text");
+const timerRing        = document.getElementById("timer-ring");
+const pointsToast      = document.getElementById("points-toast");
 
-const finalScoreEl = document.getElementById("final-score");
-const correctCountEl = document.getElementById("correct-count");
-const avgTimeEl = document.getElementById("avg-time");
-const highScoreMsg = document.getElementById("high-score-msg");
+const finalScoreEl     = document.getElementById("final-score");
+const correctCountEl   = document.getElementById("correct-count");
+const avgTimeEl        = document.getElementById("avg-time");
+const highScoreMsg     = document.getElementById("high-score-msg");
 const btnViewLeaderboard = document.getElementById("btn-view-leaderboard");
-const btnPlayAgain = document.getElementById("btn-play-again");
+const btnPlayAgain     = document.getElementById("btn-play-again");
+
+// Overlay refs
+const nameSearchOverlay = document.getElementById("name-search-overlay");
+const nameSearchInput   = document.getElementById("name-search-input");
+const nameSearchList    = document.getElementById("name-search-list");
+const btnSearchBack     = document.getElementById("btn-search-back");
+const btnSearchPlay     = document.getElementById("btn-search-play");
 
 // ===== SCREEN MANAGEMENT =====
 function showScreen(name) {
   Object.entries(screens).forEach(([key, el]) => {
     if (!el) return;
-    if (key === name) {
-      el.classList.add("active");
-    } else {
-      el.classList.remove("active");
-    }
+    el.classList.toggle("active", key === name);
   });
 }
 
-// ===== LOAD QUESTIONS FROM FIRESTORE =====
+// ===== LOAD QUESTIONS =====
 async function loadQuestions() {
   const snapshot = await getDocs(collection(db, "questions"));
   allQuestions = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -83,7 +85,7 @@ async function loadQuestions() {
   }
 }
 
-// ===== LOAD EXISTING PLAYERS (for autocomplete) =====
+// ===== LOAD EXISTING PLAYERS =====
 async function loadExistingPlayers() {
   try {
     const snapshot = await getDocs(
@@ -95,58 +97,94 @@ async function loadExistingPlayers() {
     allPlayers = [];
   }
 
-  // Pre-fill last used name
   const lastName = localStorage.getItem("bgLastName");
   if (lastName && nameInput) {
     nameInput.value = lastName;
   }
-
-  renderSuggestions(nameInput ? nameInput.value : "");
 }
 
-// ===== NAME SUGGESTIONS =====
-function renderSuggestions(filter) {
-  if (!nameSuggestions) return;
+// ===== NAME SEARCH OVERLAY =====
+function openSearchOverlay() {
+  if (!nameSearchOverlay) return;
+  nameSearchOverlay.classList.remove("hidden");
+  if (nameSearchInput) {
+    nameSearchInput.value = nameInput ? nameInput.value : "";
+    renderOverlaySuggestions(nameSearchInput.value);
+    setTimeout(() => nameSearchInput.focus(), 60);
+  }
+}
+
+function closeSearchOverlay() {
+  if (!nameSearchOverlay) return;
+  nameSearchOverlay.classList.add("hidden");
+}
+
+function renderOverlaySuggestions(filter) {
+  if (!nameSearchList) return;
 
   const trimmed = filter.trim().toLowerCase();
   let matches;
 
   if (trimmed === "") {
-    // Show all players (up to 8)
-    matches = allPlayers.slice(0, 8);
+    matches = allPlayers.slice(0, 12);
   } else {
     matches = allPlayers.filter((p) =>
       p.name.toLowerCase().startsWith(trimmed)
     );
-    // Hide list if there's an exact match
+    // Exact match — no need to show list
     if (matches.length === 1 && matches[0].name.toLowerCase() === trimmed) {
-      nameSuggestions.innerHTML = "";
+      nameSearchList.innerHTML = "";
       return;
     }
   }
 
   if (matches.length === 0) {
-    nameSuggestions.innerHTML = "";
+    nameSearchList.innerHTML = `<div class="search-empty">Ingen treff — skriv inn et nytt navn</div>`;
     return;
   }
 
-  nameSuggestions.innerHTML = matches
-    .map(
-      (p) =>
-        `<div class="name-suggestion" data-name="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>`
-    )
+  nameSearchList.innerHTML = matches
+    .map((p) => `<div class="search-suggestion" data-name="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>`)
     .join("");
 
-  nameSuggestions.querySelectorAll(".name-suggestion").forEach((el) => {
+  nameSearchList.querySelectorAll(".search-suggestion").forEach((el) => {
     el.addEventListener("click", () => {
-      if (nameInput) nameInput.value = el.dataset.name;
-      nameSuggestions.innerHTML = "";
-      if (btnRegister) btnRegister.focus();
+      if (nameSearchInput) nameSearchInput.value = el.dataset.name;
+      confirmOverlay();
     });
   });
 }
 
-// ===== FISHER-YATES SHUFFLE =====
+function confirmOverlay() {
+  const name = nameSearchInput ? nameSearchInput.value.trim() : "";
+  if (nameInput) nameInput.value = name;
+  closeSearchOverlay();
+  handleRegister();
+}
+
+// Overlay events
+if (nameInput) {
+  nameInput.addEventListener("click", openSearchOverlay);
+  nameInput.addEventListener("focus", (e) => { e.target.blur(); openSearchOverlay(); });
+}
+if (btnRegister) {
+  btnRegister.addEventListener("click", () => {
+    const name = nameInput ? nameInput.value.trim() : "";
+    if (name.length >= 2) {
+      handleRegister();
+    } else {
+      openSearchOverlay();
+    }
+  });
+}
+if (btnSearchBack)  btnSearchBack.addEventListener("click", closeSearchOverlay);
+if (btnSearchPlay)  btnSearchPlay.addEventListener("click", confirmOverlay);
+if (nameSearchInput) {
+  nameSearchInput.addEventListener("input",   () => renderOverlaySuggestions(nameSearchInput.value));
+  nameSearchInput.addEventListener("keydown", (e) => { if (e.key === "Enter") confirmOverlay(); });
+}
+
+// ===== SHUFFLE =====
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -156,12 +194,11 @@ function shuffle(arr) {
   return a;
 }
 
-// ===== SHUFFLE ANSWERS (tracks where correct answer lands) =====
 function shuffleAnswers(answers, correctIdx) {
-  const tagged = answers.map((a, i) => ({ a, isCorrect: i === correctIdx }));
+  const tagged  = answers.map((a, i) => ({ a, isCorrect: i === correctIdx }));
   const shuffled = shuffle(tagged);
   return {
-    answers: shuffled.map(t => t.a),
+    answers:    shuffled.map(t => t.a),
     correctIdx: shuffled.findIndex(t => t.isCorrect),
   };
 }
@@ -169,8 +206,7 @@ function shuffleAnswers(answers, correctIdx) {
 // ===== REGISTRATION =====
 async function registerPlayer(name) {
   const usersRef = collection(db, "users");
-  const q = query(usersRef, where("name", "==", name));
-  const existing = await getDocs(q);
+  const existing = await getDocs(query(usersRef, where("name", "==", name)));
 
   if (!existing.empty) {
     const existingDoc = existing.docs[0];
@@ -183,7 +219,6 @@ async function registerPlayer(name) {
     return;
   }
 
-  // New player — create document
   const docRef = await addDoc(usersRef, {
     name,
     quizScore: 0,
@@ -201,10 +236,10 @@ async function registerPlayer(name) {
 
 // ===== START QUIZ =====
 function startQuiz() {
-  gameQuestions = shuffle(allQuestions).slice(0, QUESTIONS_PER_GAME);
+  gameQuestions     = shuffle(allQuestions).slice(0, QUESTIONS_PER_GAME);
   currentQuestionIdx = 0;
-  totalScore = 0;
-  questionResults = [];
+  totalScore        = 0;
+  questionResults   = [];
   showScreen("quiz");
   loadQuestion(0);
 }
@@ -212,16 +247,16 @@ function startQuiz() {
 // ===== LOAD QUESTION =====
 function loadQuestion(idx) {
   clearInterval(timerInterval);
-  answerLocked = false;
-  secondsElapsed = 0;
+  answerLocked  = false;
+  ticksElapsed  = 0;
 
-  const q = gameQuestions[idx];
+  const q        = gameQuestions[idx];
   const progress = (idx / QUESTIONS_PER_GAME) * 100;
 
-  if (progressBar) progressBar.style.width = progress + "%";
-  if (questionCounter) questionCounter.textContent = `Spørsmål ${idx + 1} / ${QUESTIONS_PER_GAME}`;
+  if (progressBar)         progressBar.style.width = progress + "%";
+  if (questionCounter)     questionCounter.textContent = `Spørsmål ${idx + 1} / ${QUESTIONS_PER_GAME}`;
   if (currentScoreDisplay) currentScoreDisplay.textContent = `Poeng: ${totalScore.toLocaleString()}`;
-  if (questionText) questionText.textContent = q.question;
+  if (questionText)        questionText.textContent = q.question;
 
   const { answers: shuffledAnswers, correctIdx } = shuffleAnswers(q.answers, q.correct);
   currentCorrectIdx = correctIdx;
@@ -243,37 +278,32 @@ function loadQuestion(idx) {
 const CIRCUMFERENCE = 188.5; // 2 * PI * 30 (radius)
 
 function startTimer() {
-  secondsElapsed = 0;
-  updateTimerDisplay(SECONDS_PER_QUESTION);
+  ticksElapsed = 0;
+  updateTimerDisplay(TIMER_TICKS_TOTAL);
 
   timerInterval = setInterval(() => {
-    secondsElapsed++;
-    const remaining = SECONDS_PER_QUESTION - secondsElapsed;
+    ticksElapsed++;
+    const remainingTicks = TIMER_TICKS_TOTAL - ticksElapsed;
+    updateTimerDisplay(remainingTicks);
 
-    updateTimerDisplay(remaining);
-
-    if (remaining <= 0) {
+    if (remainingTicks <= 0) {
       clearInterval(timerInterval);
       handleTimeout();
     }
-  }, 1000);
+  }, TIMER_INTERVAL_MS);
 }
 
-function updateTimerDisplay(remaining) {
-  if (timerText) timerText.textContent = remaining;
+function updateTimerDisplay(remainingTicks) {
+  if (timerText) timerText.textContent = Math.ceil(remainingTicks / 10);
 
   if (timerRing) {
-    const fraction = remaining / SECONDS_PER_QUESTION;
-    const offset = CIRCUMFERENCE * (1 - fraction);
+    const fraction = remainingTicks / TIMER_TICKS_TOTAL;
+    const offset   = CIRCUMFERENCE * (1 - fraction);
     timerRing.style.strokeDashoffset = offset;
 
-    if (fraction > 0.5) {
-      timerRing.style.stroke = "#4caf50";
-    } else if (fraction > 0.25) {
-      timerRing.style.stroke = "#ff9800";
-    } else {
-      timerRing.style.stroke = "#f44336";
-    }
+    if (fraction > 0.5)       timerRing.style.stroke = "#4caf50";
+    else if (fraction > 0.25) timerRing.style.stroke = "#ff9800";
+    else                      timerRing.style.stroke = "#f44336";
   }
 }
 
@@ -287,16 +317,17 @@ function handleAnswer(selectedIdx) {
 
   let pointsEarned = 0;
   if (isCorrect) {
-    pointsEarned = Math.max(0, SCORE_PER_CORRECT - secondsElapsed * SCORE_PENALTY_PER_SECOND);
+    // -1 point per tick (0.1 second), max 1000, min 700 (at 30s)
+    pointsEarned = Math.max(0, SCORE_PER_CORRECT - ticksElapsed);
     totalScore += pointsEarned;
   }
 
-  questionResults.push({ isCorrect, secondsElapsed });
+  questionResults.push({ isCorrect, secondsElapsed: ticksElapsed / 10 });
 
   const btns = answersGrid.querySelectorAll(".answer-btn");
   btns.forEach((btn, i) => {
     btn.disabled = true;
-    if (i === currentCorrectIdx) btn.classList.add("correct");
+    if (i === currentCorrectIdx)          btn.classList.add("correct");
     else if (i === selectedIdx && !isCorrect) btn.classList.add("wrong");
   });
 
@@ -308,7 +339,7 @@ function handleTimeout() {
   if (answerLocked) return;
   answerLocked = true;
 
-  questionResults.push({ isCorrect: false, secondsElapsed: SECONDS_PER_QUESTION });
+  questionResults.push({ isCorrect: false, secondsElapsed: TIMER_TICKS_TOTAL / 10 });
 
   const btns = answersGrid ? answersGrid.querySelectorAll(".answer-btn") : [];
   btns.forEach((btn, i) => {
@@ -322,11 +353,8 @@ function handleTimeout() {
 
 function showPointsToast(points, isCorrect) {
   if (!pointsToast) return;
-
   pointsToast.textContent = isCorrect ? `+${points.toLocaleString()}` : "✗ Ingen poeng";
-  pointsToast.classList.remove("wrong-toast");
-  if (!isCorrect) pointsToast.classList.add("wrong-toast");
-
+  pointsToast.classList.toggle("wrong-toast", !isCorrect);
   pointsToast.classList.add("show");
   setTimeout(() => pointsToast.classList.remove("show"), 1000);
 }
@@ -347,11 +375,10 @@ async function finishQuiz() {
 
   const isNewHighScore = totalScore > previousBestScore;
 
-  // Only update Firestore if it's a new high score
   if (userId && isNewHighScore) {
     try {
       await updateDoc(doc(db, "users", userId), {
-        quizScore: totalScore,
+        quizScore:     totalScore,
         quizCompleted: true,
       });
     } catch (err) {
@@ -359,35 +386,32 @@ async function finishQuiz() {
     }
   }
 
-  // Show results
   const correctCount = questionResults.filter((r) => r.isCorrect).length;
   const avgTime = questionResults.length > 0
     ? Math.round(questionResults.reduce((s, r) => s + r.secondsElapsed, 0) / questionResults.length)
     : 0;
 
-  if (finalScoreEl) finalScoreEl.textContent = totalScore.toLocaleString();
+  if (finalScoreEl)   finalScoreEl.textContent   = totalScore.toLocaleString();
   if (correctCountEl) correctCountEl.textContent = `${correctCount} / ${QUESTIONS_PER_GAME}`;
-  if (avgTimeEl) avgTimeEl.textContent = `${avgTime}s`;
-  if (progressBar) progressBar.style.width = "100%";
+  if (avgTimeEl)      avgTimeEl.textContent      = `${avgTime}s`;
+  if (progressBar)    progressBar.style.width    = "100%";
 
-  // High score feedback
   if (highScoreMsg) {
     if (previousBestScore === 0) {
       highScoreMsg.textContent = "";
-      highScoreMsg.className = "high-score-msg";
+      highScoreMsg.className   = "high-score-msg";
     } else if (isNewHighScore) {
       highScoreMsg.textContent = `🎉 Ny rekord! Din forrige beste var ${previousBestScore.toLocaleString()} poeng.`;
-      highScoreMsg.className = "high-score-msg high-score-new";
+      highScoreMsg.className   = "high-score-msg high-score-new";
     } else if (totalScore === previousBestScore) {
       highScoreMsg.textContent = `Lik din forrige rekord (${previousBestScore.toLocaleString()} poeng).`;
-      highScoreMsg.className = "high-score-msg";
+      highScoreMsg.className   = "high-score-msg";
     } else {
       highScoreMsg.textContent = `Din rekord er fortsatt ${previousBestScore.toLocaleString()} poeng.`;
-      highScoreMsg.className = "high-score-msg";
+      highScoreMsg.className   = "high-score-msg";
     }
   }
 
-  // Update previousBestScore for potential replays
   if (isNewHighScore) previousBestScore = totalScore;
 
   showScreen("results");
@@ -402,34 +426,10 @@ if (btnViewLeaderboard) {
 
 // ===== PLAY AGAIN =====
 if (btnPlayAgain) {
-  btnPlayAgain.addEventListener("click", () => {
-    startQuiz();
-  });
+  btnPlayAgain.addEventListener("click", () => startQuiz());
 }
 
-// ===== REGISTER FLOW =====
-if (btnRegister) {
-  btnRegister.addEventListener("click", handleRegister);
-}
-
-if (nameInput) {
-  nameInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") handleRegister();
-  });
-  nameInput.addEventListener("input", () => {
-    renderSuggestions(nameInput.value);
-  });
-  nameInput.addEventListener("focus", () => {
-    renderSuggestions(nameInput.value);
-  });
-  // Hide suggestions when clicking elsewhere
-  document.addEventListener("click", (e) => {
-    if (!nameInput.contains(e.target) && nameSuggestions && !nameSuggestions.contains(e.target)) {
-      if (nameSuggestions) nameSuggestions.innerHTML = "";
-    }
-  });
-}
-
+// ===== REGISTER VALIDATION =====
 async function handleRegister() {
   const name = nameInput ? nameInput.value.trim() : "";
 
@@ -446,7 +446,6 @@ async function handleRegister() {
     return;
   }
 
-  if (nameSuggestions) nameSuggestions.innerHTML = "";
   setLoading(true);
   hideError();
 
@@ -461,7 +460,7 @@ async function handleRegister() {
 
 function setLoading(loading) {
   if (btnRegister) {
-    btnRegister.disabled = loading;
+    btnRegister.disabled  = loading;
     btnRegister.textContent = loading ? "Laster…" : "La oss spille!";
   }
 }
