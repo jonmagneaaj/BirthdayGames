@@ -14,8 +14,8 @@ import {
 
 // ===== CONSTANTS =====
 const QUESTIONS_PER_GAME  = 10;
-const QUESTION_DURATION_MS = 30_000; // 30 seconds in ms
-const TICK_MS             = 100;     // scoring granularity: 1 point per 100ms
+const QUESTION_DURATION_MS = 15_000; // 15 seconds
+const TICK_MS             = 100;     // 100ms granularity
 const SCORE_PER_CORRECT   = 1000;
 
 // ===== STATE =====
@@ -327,8 +327,8 @@ function handleAnswer(selectedIdx) {
 
   let pointsEarned = 0;
   if (isCorrect) {
-    // -1 point per 100ms: 1000→700 over 30s, finer than any setInterval approach
-    pointsEarned = Math.max(0, SCORE_PER_CORRECT - ticks);
+    // Linear: 1000 pts at 0s → 0 pts at 15s
+    pointsEarned = Math.round(SCORE_PER_CORRECT * (TOTAL_TICKS - ticks) / TOTAL_TICKS);
     totalScore += pointsEarned;
   }
 
