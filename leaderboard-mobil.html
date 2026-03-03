@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="no" data-color-scheme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Birthday Games — Resultattavle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&display=swap" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@digdir/designsystemet-css@1.12.1/dist/theme/designsystemet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@digdir/designsystemet-css@1.12.1/dist/src/index.css" />
+  <link rel="stylesheet" href="css/shared.css" />
+  <link rel="stylesheet" href="css/leaderboard-mobil.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <div id="mob-header">
+    <span class="logo gradient-text">🎂 Birthday Games</span>
+    <a href="play.html" class="ds-button" data-variant="secondary" data-size="sm">Spill</a>
+  </div>
+
+  <div id="tab-bar">
+    <button id="tab-quiz" class="tab-btn active">🧠 Quizpoeng</button>
+    <button id="tab-live" class="tab-btn">⚡ Livepoeng</button>
+  </div>
+
+  <!-- Quiz leaderboard panel -->
+  <div id="mob-quiz-panel" class="mob-panel active">
+    <div id="mob-quiz-count" class="panel-count"></div>
+    <div id="mob-quiz-list"></div>
+  </div>
+
+  <!-- Live leaderboard OR team view -->
+  <div id="mob-live-panel" class="mob-panel">
+    <div id="mob-live-inner">
+      <div id="mob-live-count" class="panel-count"></div>
+      <div id="mob-live-list"></div>
+    </div>
+    <div id="mob-teams-inner" class="hidden">
+      <div id="mob-teams-header">🏆 Lagoppsett</div>
+      <div id="mob-team-grid"></div>
+    </div>
+  </div>
+
+  <div id="mob-updated"></div>
+
+</div>
+
+<script type="module" src="js/leaderboard-mobil.js"></script>
+</body>
+</html>

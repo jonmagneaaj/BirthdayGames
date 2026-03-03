@@ -42,11 +42,13 @@
           autocapitalize="words"
           spellcheck="false"
         />
+        <div id="name-suggestions"></div>
       </div>
       <button id="btn-register" class="ds-button" data-fullwidth>La oss spille!</button>
       <div id="register-error" class="error-msg hidden"></div>
     </div>
 
+    <a href="leaderboard-mobil.html" class="leaderboard-link">📊 Se resultattavlen</a>
     <p class="register-note">Opptil 1 000 poeng per spørsmål — raskere = mer poeng</p>
   </section>
 
@@ -86,6 +88,7 @@
       <div class="final-score gradient-text" id="final-score">0</div>
       <div class="score-label">poeng</div>
     </div>
+    <div id="high-score-msg" class="high-score-msg"></div>
     <div class="results-breakdown">
       <div class="breakdown-row">
         <span class="label">Riktige svar</span>
@@ -97,17 +100,8 @@
       </div>
     </div>
     <button id="btn-view-leaderboard" class="ds-button" data-fullwidth>Se resultattavlen →</button>
+    <button id="btn-play-again" class="ds-button" data-variant="secondary" data-fullwidth>Spill igjen →</button>
     <p class="results-note">Poengsummen din er lagret — sjekk storskjermen for plassering!</p>
-  </section>
-
-  <!-- ===== ALREADY PLAYED ===== -->
-  <section id="screen-done" class="screen">
-    <div class="hero-emoji">✅</div>
-    <h2>Du har allerede spilt!</h2>
-    <p>Poengsummen din:</p>
-    <div id="done-score" class="final-score gradient-text">0</div>
-    <p class="results-note">Sjekk TV-skjermen for å se plasseringen din.</p>
-    <button class="ds-button" data-fullwidth onclick="window.location.href='index.html'">Se resultattavlen →</button>
   </section>
 
 </div>

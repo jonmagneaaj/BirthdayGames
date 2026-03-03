@@ -7,6 +7,8 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
+  limit,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -14,7 +16,7 @@ import {
 const QUESTIONS_PER_GAME = 10;
 const SECONDS_PER_QUESTION = 30;
 const SCORE_PER_CORRECT = 1000;
-const SCORE_PENALTY_PER_SECOND = 10; // points lost per second elapsed
+const SCORE_PENALTY_PER_SECOND = 1; // points lost per second elapsed
 
 // ===== STATE =====
 let allQuestions = [];
@@ -28,16 +30,18 @@ let currentCorrectIdx = 0;
 let userId = null;
 let playerName = "";
 let questionResults = [];
+let previousBestScore = 0;
+let allPlayers = []; // for name autocomplete
 
 // ===== DOM REFS =====
 const screens = {
   register: document.getElementById("screen-register"),
   quiz: document.getElementById("screen-quiz"),
   results: document.getElementById("screen-results"),
-  done: document.getElementById("screen-done"),
 };
 
 const nameInput = document.getElementById("player-name-input");
+const nameSuggestions = document.getElementById("name-suggestions");
 const btnRegister = document.getElementById("btn-register");
 const errorMsg = document.getElementById("register-error");
 
@@ -53,9 +57,9 @@ const pointsToast = document.getElementById("points-toast");
 const finalScoreEl = document.getElementById("final-score");
 const correctCountEl = document.getElementById("correct-count");
 const avgTimeEl = document.getElementById("avg-time");
+const highScoreMsg = document.getElementById("high-score-msg");
 const btnViewLeaderboard = document.getElementById("btn-view-leaderboard");
-
-const doneScoreEl = document.getElementById("done-score");
+const btnPlayAgain = document.getElementById("btn-play-again");
 
 // ===== SCREEN MANAGEMENT =====
 function showScreen(name) {
@@ -77,6 +81,69 @@ async function loadQuestions() {
     showError("Ingen spørsmål funnet! Be verten om å legge til spørsmål først.");
     throw new Error("No questions in Firestore");
   }
+}
+
+// ===== LOAD EXISTING PLAYERS (for autocomplete) =====
+async function loadExistingPlayers() {
+  try {
+    const snapshot = await getDocs(
+      query(collection(db, "users"), orderBy("name"), limit(100))
+    );
+    allPlayers = snapshot.docs.map((d) => ({ id: d.id, name: d.data().name }));
+  } catch (err) {
+    console.warn("Could not load players for autocomplete:", err);
+    allPlayers = [];
+  }
+
+  // Pre-fill last used name
+  const lastName = localStorage.getItem("bgLastName");
+  if (lastName && nameInput) {
+    nameInput.value = lastName;
+  }
+
+  renderSuggestions(nameInput ? nameInput.value : "");
+}
+
+// ===== NAME SUGGESTIONS =====
+function renderSuggestions(filter) {
+  if (!nameSuggestions) return;
+
+  const trimmed = filter.trim().toLowerCase();
+  let matches;
+
+  if (trimmed === "") {
+    // Show all players (up to 8)
+    matches = allPlayers.slice(0, 8);
+  } else {
+    matches = allPlayers.filter((p) =>
+      p.name.toLowerCase().startsWith(trimmed)
+    );
+    // Hide list if there's an exact match
+    if (matches.length === 1 && matches[0].name.toLowerCase() === trimmed) {
+      nameSuggestions.innerHTML = "";
+      return;
+    }
+  }
+
+  if (matches.length === 0) {
+    nameSuggestions.innerHTML = "";
+    return;
+  }
+
+  nameSuggestions.innerHTML = matches
+    .map(
+      (p) =>
+        `<div class="name-suggestion" data-name="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>`
+    )
+    .join("");
+
+  nameSuggestions.querySelectorAll(".name-suggestion").forEach((el) => {
+    el.addEventListener("click", () => {
+      if (nameInput) nameInput.value = el.dataset.name;
+      nameSuggestions.innerHTML = "";
+      if (btnRegister) btnRegister.focus();
+    });
+  });
 }
 
 // ===== FISHER-YATES SHUFFLE =====
@@ -101,7 +168,6 @@ function shuffleAnswers(answers, correctIdx) {
 
 // ===== REGISTRATION =====
 async function registerPlayer(name) {
-  // Check if player already exists
   const usersRef = collection(db, "users");
   const q = query(usersRef, where("name", "==", name));
   const existing = await getDocs(q);
@@ -109,19 +175,10 @@ async function registerPlayer(name) {
   if (!existing.empty) {
     const existingDoc = existing.docs[0];
     const data = existingDoc.data();
-
-    if (data.quizCompleted) {
-      // Already played — show done screen
-      userId = existingDoc.id;
-      playerName = name;
-      doneScoreEl.textContent = (data.quizScore || 0).toLocaleString();
-      showScreen("done");
-      return;
-    }
-
-    // Registered but not completed — let them play again
     userId = existingDoc.id;
     playerName = name;
+    previousBestScore = data.quizScore || 0;
+    localStorage.setItem("bgLastName", name);
     startQuiz();
     return;
   }
@@ -137,6 +194,8 @@ async function registerPlayer(name) {
 
   userId = docRef.id;
   playerName = name;
+  previousBestScore = 0;
+  localStorage.setItem("bgLastName", name);
   startQuiz();
 }
 
@@ -159,21 +218,14 @@ function loadQuestion(idx) {
   const q = gameQuestions[idx];
   const progress = (idx / QUESTIONS_PER_GAME) * 100;
 
-  // Update progress bar
   if (progressBar) progressBar.style.width = progress + "%";
-
-  // Update counter
   if (questionCounter) questionCounter.textContent = `Spørsmål ${idx + 1} / ${QUESTIONS_PER_GAME}`;
   if (currentScoreDisplay) currentScoreDisplay.textContent = `Poeng: ${totalScore.toLocaleString()}`;
-
-  // Set question text
   if (questionText) questionText.textContent = q.question;
 
-  // Shuffle answer positions for this question
   const { answers: shuffledAnswers, correctIdx } = shuffleAnswers(q.answers, q.correct);
   currentCorrectIdx = correctIdx;
 
-  // Render answer buttons
   if (answersGrid) {
     answersGrid.innerHTML = shuffledAnswers.map((ans, i) => `
       <button class="answer-btn" data-index="${i}">${escapeHtml(ans)}</button>
@@ -184,7 +236,6 @@ function loadQuestion(idx) {
     });
   }
 
-  // Start timer
   startTimer();
 }
 
@@ -216,7 +267,6 @@ function updateTimerDisplay(remaining) {
     const offset = CIRCUMFERENCE * (1 - fraction);
     timerRing.style.strokeDashoffset = offset;
 
-    // Color shifts: green → yellow → red
     if (fraction > 0.5) {
       timerRing.style.stroke = "#4caf50";
     } else if (fraction > 0.25) {
@@ -243,7 +293,6 @@ function handleAnswer(selectedIdx) {
 
   questionResults.push({ isCorrect, secondsElapsed });
 
-  // Visual feedback
   const btns = answersGrid.querySelectorAll(".answer-btn");
   btns.forEach((btn, i) => {
     btn.disabled = true;
@@ -251,10 +300,7 @@ function handleAnswer(selectedIdx) {
     else if (i === selectedIdx && !isCorrect) btn.classList.add("wrong");
   });
 
-  // Points toast
   showPointsToast(pointsEarned, isCorrect);
-
-  // Advance after delay
   setTimeout(() => nextQuestion(), 1400);
 }
 
@@ -299,8 +345,10 @@ function nextQuestion() {
 async function finishQuiz() {
   clearInterval(timerInterval);
 
-  // Update Firestore
-  if (userId) {
+  const isNewHighScore = totalScore > previousBestScore;
+
+  // Only update Firestore if it's a new high score
+  if (userId && isNewHighScore) {
     try {
       await updateDoc(doc(db, "users", userId), {
         quizScore: totalScore,
@@ -320,8 +368,27 @@ async function finishQuiz() {
   if (finalScoreEl) finalScoreEl.textContent = totalScore.toLocaleString();
   if (correctCountEl) correctCountEl.textContent = `${correctCount} / ${QUESTIONS_PER_GAME}`;
   if (avgTimeEl) avgTimeEl.textContent = `${avgTime}s`;
-
   if (progressBar) progressBar.style.width = "100%";
+
+  // High score feedback
+  if (highScoreMsg) {
+    if (previousBestScore === 0) {
+      highScoreMsg.textContent = "";
+      highScoreMsg.className = "high-score-msg";
+    } else if (isNewHighScore) {
+      highScoreMsg.textContent = `🎉 Ny rekord! Din forrige beste var ${previousBestScore.toLocaleString()} poeng.`;
+      highScoreMsg.className = "high-score-msg high-score-new";
+    } else if (totalScore === previousBestScore) {
+      highScoreMsg.textContent = `Lik din forrige rekord (${previousBestScore.toLocaleString()} poeng).`;
+      highScoreMsg.className = "high-score-msg";
+    } else {
+      highScoreMsg.textContent = `Din rekord er fortsatt ${previousBestScore.toLocaleString()} poeng.`;
+      highScoreMsg.className = "high-score-msg";
+    }
+  }
+
+  // Update previousBestScore for potential replays
+  if (isNewHighScore) previousBestScore = totalScore;
 
   showScreen("results");
 }
@@ -329,7 +396,14 @@ async function finishQuiz() {
 // ===== VIEW LEADERBOARD =====
 if (btnViewLeaderboard) {
   btnViewLeaderboard.addEventListener("click", () => {
-    window.location.href = "index.html";
+    window.location.href = "leaderboard-mobil.html";
+  });
+}
+
+// ===== PLAY AGAIN =====
+if (btnPlayAgain) {
+  btnPlayAgain.addEventListener("click", () => {
+    startQuiz();
   });
 }
 
@@ -341,6 +415,18 @@ if (btnRegister) {
 if (nameInput) {
   nameInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleRegister();
+  });
+  nameInput.addEventListener("input", () => {
+    renderSuggestions(nameInput.value);
+  });
+  nameInput.addEventListener("focus", () => {
+    renderSuggestions(nameInput.value);
+  });
+  // Hide suggestions when clicking elsewhere
+  document.addEventListener("click", (e) => {
+    if (!nameInput.contains(e.target) && nameSuggestions && !nameSuggestions.contains(e.target)) {
+      if (nameSuggestions) nameSuggestions.innerHTML = "";
+    }
   });
 }
 
@@ -360,6 +446,7 @@ async function handleRegister() {
     return;
   }
 
+  if (nameSuggestions) nameSuggestions.innerHTML = "";
   setLoading(true);
   hideError();
 
@@ -402,5 +489,5 @@ function escapeHtml(str) {
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", async () => {
   showScreen("register");
-  await loadQuestions();
+  await Promise.all([loadQuestions(), loadExistingPlayers()]);
 });
