@@ -35,21 +35,44 @@ body { min-height: 100dvh; }
 
 .tab-btn {
   flex: 1;
-  padding: 13px 8px;
+  padding: 12px 6px;
   background: transparent;
   border: none;
   color: var(--color-text-dim);
   font-family: 'Nunito Sans', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
   border-bottom: 3px solid transparent;
   transition: color 0.15s, border-color 0.15s;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  position: relative;
 }
 .tab-btn.active {
   color: var(--color-text);
   border-bottom-color: var(--color-accent);
+}
+
+/* ===== TEAMS TAB LIVE HIGHLIGHT ===== */
+.tab-btn.tab-live {
+  color: var(--color-gold);
+  border-bottom-color: var(--color-gold);
+}
+.tab-btn.tab-live::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  background: var(--color-gold);
+  border-radius: 50%;
+  animation: tabDotPulse 1.4s ease-in-out infinite;
+}
+@keyframes tabDotPulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(1.6); }
 }
 
 /* ===== PANELS ===== */
@@ -132,8 +155,8 @@ body { min-height: 100dvh; }
 }
 
 /* ===== TEAM VIEW ===== */
-#mob-teams-header {
-  font-size: 1rem;
+.teams-panel-header {
+  font-size: 0.75rem;
   font-weight: 900;
   padding: 14px 16px 8px;
   color: var(--color-text-dim);

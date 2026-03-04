@@ -17,31 +17,31 @@ let allLivePlayers = [];
 // ===== DOM REFS =====
 const tabQuiz      = document.getElementById("tab-quiz");
 const tabLive      = document.getElementById("tab-live");
+const tabTeams     = document.getElementById("tab-teams");
 const quizPanel    = document.getElementById("mob-quiz-panel");
 const livePanel    = document.getElementById("mob-live-panel");
+const teamsPanel   = document.getElementById("mob-teams-panel");
 const quizListEl   = document.getElementById("mob-quiz-list");
 const quizCountEl  = document.getElementById("mob-quiz-count");
 const liveListEl   = document.getElementById("mob-live-list");
 const liveCountEl  = document.getElementById("mob-live-count");
-const liveInnerEl  = document.getElementById("mob-live-inner");
-const teamsInnerEl = document.getElementById("mob-teams-inner");
 const teamGridEl   = document.getElementById("mob-team-grid");
 const updatedEl    = document.getElementById("mob-updated");
 
 // ===== TAB SWITCHING =====
-tabQuiz.addEventListener("click", () => {
-  tabQuiz.classList.add("active");
-  tabLive.classList.remove("active");
-  quizPanel.classList.add("active");
-  livePanel.classList.remove("active");
-});
+const allTabs   = [tabQuiz, tabLive, tabTeams];
+const allPanels = [quizPanel, livePanel, teamsPanel];
 
-tabLive.addEventListener("click", () => {
-  tabLive.classList.add("active");
-  tabQuiz.classList.remove("active");
-  livePanel.classList.add("active");
-  quizPanel.classList.remove("active");
-});
+function switchTab(activeTab, activePanel) {
+  allTabs.forEach(t   => t.classList.remove("active"));
+  allPanels.forEach(p => p.classList.remove("active"));
+  activeTab.classList.add("active");
+  activePanel.classList.add("active");
+}
+
+tabQuiz.addEventListener("click",  () => switchTab(tabQuiz,  quizPanel));
+tabLive.addEventListener("click",  () => switchTab(tabLive,  livePanel));
+tabTeams.addEventListener("click", () => switchTab(tabTeams, teamsPanel));
 
 // ===== CHEVRON LOGIC =====
 function getChevron(userId, currentRank, prevMap) {
@@ -110,9 +110,13 @@ function saveRanks(players, prevMap) {
 
 // ===== TEAM VIEW =====
 function showTeamMode(teams) {
-  liveInnerEl.classList.add("hidden");
-  teamsInnerEl.classList.remove("hidden");
-  tabLive.textContent = t("tabTeams");
+  // Highlight teams tab as "live"
+  tabTeams.classList.add("tab-live");
+
+  // Auto-switch to teams tab if user is not already on it
+  if (!teamsPanel.classList.contains("active")) {
+    switchTab(tabTeams, teamsPanel);
+  }
 
   if (!teamGridEl || !teams || teams.length === 0) return;
 
@@ -133,9 +137,11 @@ function showTeamMode(teams) {
 }
 
 function showLiveMode() {
-  teamsInnerEl.classList.add("hidden");
-  liveInnerEl.classList.remove("hidden");
-  tabLive.textContent = t("tabLive");
+  tabTeams.classList.remove("tab-live");
+  // If user is currently on teams panel, switch back to live
+  if (teamsPanel.classList.contains("active")) {
+    switchTab(tabLive, livePanel);
+  }
 }
 
 // ===== TIMESTAMP =====

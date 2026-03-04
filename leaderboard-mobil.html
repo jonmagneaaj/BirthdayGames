@@ -26,6 +26,7 @@
   <div id="tab-bar">
     <button id="tab-quiz" class="tab-btn active" data-i18n="tabQuiz">🧠 Quizpoeng</button>
     <button id="tab-live" class="tab-btn" data-i18n="tabLive">⚡ Livepoeng</button>
+    <button id="tab-teams" class="tab-btn" data-i18n="tabTeams">🏆 Lagspill</button>
   </div>
 
   <!-- Quiz leaderboard panel -->
@@ -34,16 +35,16 @@
     <div id="mob-quiz-list"></div>
   </div>
 
-  <!-- Live leaderboard OR team view -->
+  <!-- Live leaderboard panel -->
   <div id="mob-live-panel" class="mob-panel">
-    <div id="mob-live-inner">
-      <div id="mob-live-count" class="panel-count"></div>
-      <div id="mob-live-list"></div>
-    </div>
-    <div id="mob-teams-inner" class="hidden">
-      <div id="mob-teams-header" data-i18n="teamsHeader">🏆 Lagoppsett</div>
-      <div id="mob-team-grid"></div>
-    </div>
+    <div id="mob-live-count" class="panel-count"></div>
+    <div id="mob-live-list"></div>
+  </div>
+
+  <!-- Teams panel -->
+  <div id="mob-teams-panel" class="mob-panel">
+    <div id="mob-teams-header" class="teams-panel-header" data-i18n="teamsHeader">🏆 Lagoppsett</div>
+    <div id="mob-team-grid"></div>
   </div>
 
   <div id="mob-updated"></div>
