@@ -118,13 +118,11 @@ function saveRanks(players, prevMap) {
 // ===== TEAM MODE =====
 function showLeaderboards() {
   if (panelsEl)      panelsEl.classList.remove("hidden");
-  if (qrSectionEl)   qrSectionEl.classList.remove("hidden");
   if (screenTeamsEl) screenTeamsEl.classList.add("hidden");
 }
 
 function showTeams(teams) {
   if (panelsEl)      panelsEl.classList.add("hidden");
-  if (qrSectionEl)   qrSectionEl.classList.add("hidden");
   if (screenTeamsEl) screenTeamsEl.classList.remove("hidden");
 
   if (!teamGridEl || !teams || teams.length === 0) return;

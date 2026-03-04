@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@digdir/designsystemet-css@1.12.1/dist/src/index.css" />
   <link rel="stylesheet" href="css/shared.css" />
   <link rel="stylesheet" href="css/admin.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -42,6 +43,7 @@
       </div>
       <div class="header-actions">
         <a href="questions.html" class="ds-button" data-variant="secondary">✏️ Rediger spørsmål</a>
+        <button id="btn-qr-modal" class="ds-button" data-variant="secondary">📱 Del QR</button>
         <button id="btn-refresh" class="ds-button" data-variant="secondary">↻ Oppdater</button>
         <button id="btn-push" class="ds-button">
           ▲ Push oppdatering
@@ -130,6 +132,17 @@
 
   </section>
 
+</div>
+
+<!-- QR Share Modal -->
+<div id="qr-modal" class="qr-modal hidden">
+  <div id="qr-modal-backdrop" class="qr-modal-backdrop"></div>
+  <div class="qr-modal-card">
+    <button id="btn-qr-close" class="qr-modal-close">✕</button>
+    <div class="qr-modal-title">Skann for å spille!</div>
+    <div id="qr-modal-code" class="qr-modal-code"></div>
+    <div id="qr-modal-url" class="qr-modal-url"></div>
+  </div>
 </div>
 
 <script type="module" src="js/admin.js"></script>

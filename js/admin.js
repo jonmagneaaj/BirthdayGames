@@ -602,6 +602,42 @@ async function deletePlayer(id, name) {
   }
 }
 
+// ===== QR MODAL =====
+(function () {
+  const modal    = document.getElementById("qr-modal");
+  const codeEl   = document.getElementById("qr-modal-code");
+  const urlEl    = document.getElementById("qr-modal-url");
+  const openBtn  = document.getElementById("btn-qr-modal");
+  const closeBtn = document.getElementById("btn-qr-close");
+  const backdrop = document.getElementById("qr-modal-backdrop");
+  let generated  = false;
+
+  function openModal() {
+    if (!modal) return;
+    if (!generated && typeof QRCode !== "undefined" && codeEl) {
+      const playUrl = window.location.origin +
+        window.location.pathname.replace(/admin\.html.*/, "") + "play.html";
+      new QRCode(codeEl, {
+        text: playUrl, width: 160, height: 160,
+        colorDark: "#000000", colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M,
+      });
+      if (urlEl) urlEl.textContent = playUrl;
+      generated = true;
+    }
+    modal.classList.remove("hidden");
+  }
+
+  function closeModal() {
+    if (modal) modal.classList.add("hidden");
+  }
+
+  if (openBtn)  openBtn.addEventListener("click", openModal);
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (backdrop) backdrop.addEventListener("click", closeModal);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+})();
+
 // ===== UTILS =====
 function escapeHtml(str) {
   return String(str)
