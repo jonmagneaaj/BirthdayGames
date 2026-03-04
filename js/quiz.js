@@ -1,3 +1,4 @@
+import { t, getLang, setLang, applyTranslations } from "./i18n.js";
 import { db } from "../firebase-config.js";
 import {
   collection,
@@ -81,7 +82,7 @@ async function loadQuestions() {
   const snapshot = await getDocs(collection(db, "questions"));
   allQuestions = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   if (allQuestions.length === 0) {
-    showError("Ingen spørsmål funnet! Be verten om å legge til spørsmål først.");
+    showError(t("errNoQuestions"));
     throw new Error("No questions in Firestore");
   }
 }
@@ -140,7 +141,7 @@ function renderOverlaySuggestions(filter) {
   }
 
   if (matches.length === 0) {
-    nameSearchList.innerHTML = `<div class="search-empty">Ingen treff — skriv inn et nytt navn</div>`;
+    nameSearchList.innerHTML = `<div class="search-empty">${t("noMatchHint")}</div>`;
     return;
   }
 
@@ -199,8 +200,8 @@ function shuffleAnswers(answers, correctIdx) {
   const tagged  = answers.map((a, i) => ({ a, isCorrect: i === correctIdx }));
   const shuffled = shuffle(tagged);
   return {
-    answers:    shuffled.map(t => t.a),
-    correctIdx: shuffled.findIndex(t => t.isCorrect),
+    answers:    shuffled.map(item => item.a),
+    correctIdx: shuffled.findIndex(item => item.isCorrect),
   };
 }
 
@@ -255,11 +256,15 @@ function loadQuestion(idx) {
   const progress = (idx / QUESTIONS_PER_GAME) * 100;
 
   if (progressBar)         progressBar.style.width = progress + "%";
-  if (questionCounter)     questionCounter.textContent = `Spørsmål ${idx + 1} / ${QUESTIONS_PER_GAME}`;
-  if (currentScoreDisplay) currentScoreDisplay.textContent = `Poeng: ${totalScore.toLocaleString()}`;
-  if (questionText)        questionText.textContent = q.question;
+  if (questionCounter)     questionCounter.textContent = t("questionCounter", { idx: idx + 1, total: QUESTIONS_PER_GAME });
+  if (currentScoreDisplay) currentScoreDisplay.textContent = t("scoreDisplay", { score: totalScore.toLocaleString() });
 
-  const { answers: shuffledAnswers, correctIdx } = shuffleAnswers(q.answers, q.correct);
+  const lang     = getLang();
+  const qText    = (lang === "en" && q.question_en) ? q.question_en : q.question;
+  const qAnswers = (lang === "en" && q.answers_en?.length) ? q.answers_en : q.answers;
+  if (questionText) questionText.textContent = qText;
+
+  const { answers: shuffledAnswers, correctIdx } = shuffleAnswers(qAnswers, q.correct);
   currentCorrectIdx = correctIdx;
 
   if (answersGrid) {
@@ -364,7 +369,7 @@ function handleTimeout() {
 
 function showPointsToast(points, isCorrect) {
   if (!pointsToast) return;
-  pointsToast.textContent = isCorrect ? `+${points.toLocaleString()}` : "✗ Ingen poeng";
+  pointsToast.textContent = isCorrect ? t("toastPoints", { points: points.toLocaleString() }) : t("toastNoPoints");
   pointsToast.classList.toggle("wrong-toast", !isCorrect);
   pointsToast.classList.add("show");
   setTimeout(() => pointsToast.classList.remove("show"), 1000);
@@ -412,13 +417,13 @@ async function finishQuiz() {
       highScoreMsg.textContent = "";
       highScoreMsg.className   = "high-score-msg";
     } else if (isNewHighScore) {
-      highScoreMsg.textContent = `🎉 Ny rekord! Din forrige beste var ${previousBestScore.toLocaleString()} poeng.`;
+      highScoreMsg.textContent = t("highScoreNew", { prev: previousBestScore.toLocaleString() });
       highScoreMsg.className   = "high-score-msg high-score-new";
     } else if (totalScore === previousBestScore) {
-      highScoreMsg.textContent = `Lik din forrige rekord (${previousBestScore.toLocaleString()} poeng).`;
+      highScoreMsg.textContent = t("highScoreEqual", { prev: previousBestScore.toLocaleString() });
       highScoreMsg.className   = "high-score-msg";
     } else {
-      highScoreMsg.textContent = `Din rekord er fortsatt ${previousBestScore.toLocaleString()} poeng.`;
+      highScoreMsg.textContent = t("highScoreBelow", { prev: previousBestScore.toLocaleString() });
       highScoreMsg.className   = "high-score-msg";
     }
   }
@@ -427,8 +432,8 @@ async function finishQuiz() {
 
   if (resultsNote) {
     resultsNote.textContent = isNewHighScore
-      ? "Ny rekord lagret! Sjekk storskjermen for plasseringen din."
-      : "Sjekk storskjermen for plasseringen din.";
+      ? t("resultsNoteNew")
+      : t("resultsNoteDefault");
   }
 
   // Check for #1 place (compare against all other players' best scores)
@@ -463,15 +468,15 @@ async function handleRegister() {
   const name = nameInput ? nameInput.value.trim() : "";
 
   if (!name) {
-    showError("Vennligst skriv inn navnet ditt.");
+    showError(t("errNameRequired"));
     return;
   }
   if (name.length < 2) {
-    showError("Navnet må ha minst 2 tegn.");
+    showError(t("errNameTooShort"));
     return;
   }
   if (name.length > 30) {
-    showError("Navnet er for langt (maks 30 tegn).");
+    showError(t("errNameTooLong"));
     return;
   }
 
@@ -482,7 +487,7 @@ async function handleRegister() {
     await registerPlayer(name);
   } catch (err) {
     console.error("Registration error:", err);
-    showError("Noe gikk galt. Sjekk tilkoblingen og prøv igjen.");
+    showError(t("errGeneric"));
     setLoading(false);
   }
 }
@@ -490,7 +495,7 @@ async function handleRegister() {
 function setLoading(loading) {
   if (btnRegister) {
     btnRegister.disabled  = loading;
-    btnRegister.textContent = loading ? "Laster…" : "La oss spille!";
+    btnRegister.textContent = loading ? t("loading") : t("playBtn");
   }
 }
 
@@ -529,7 +534,7 @@ function triggerNumber1Celebration() {
   }
 
   const scoreEl = document.getElementById("celebration-score");
-  if (scoreEl) scoreEl.textContent = totalScore.toLocaleString() + " poeng";
+  if (scoreEl) scoreEl.textContent = t("celebrationScore", { score: totalScore.toLocaleString() });
 
   overlay.classList.remove("hidden");
   overlay.addEventListener("click", () => overlay.classList.add("hidden"), { once: true });
@@ -543,6 +548,17 @@ function triggerHighScorePulse() {
   }
 }
 
+// ===== LANG TOGGLE =====
+function initLangToggle() {
+  const btn = document.getElementById("btn-lang-toggle");
+  if (!btn) return;
+  btn.textContent = getLang() === "no" ? "🇬🇧 EN" : "🇳🇴 NO";
+  btn.addEventListener("click", () => {
+    setLang(getLang() === "no" ? "en" : "no");
+    location.reload();
+  });
+}
+
 // ===== UTILS =====
 function escapeHtml(str) {
   return String(str)
@@ -554,6 +570,9 @@ function escapeHtml(str) {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", async () => {
+  applyTranslations();
+  document.title = t("pageTitle");
+  initLangToggle();
   showScreen("register");
   await Promise.all([loadQuestions(), loadExistingPlayers()]);
 });

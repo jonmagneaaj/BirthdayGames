@@ -17,25 +17,29 @@
 
   <div id="top-bar">
     <span class="logo gradient-text">🎂 Birthday Games</span>
-    <span id="player-display"></span>
+    <div class="top-bar-right">
+      <button id="btn-lang-toggle" class="ds-button" data-variant="secondary" data-size="sm"></button>
+      <span id="player-display"></span>
+    </div>
   </div>
 
   <!-- ===== REGISTER ===== -->
   <section id="screen-register" class="screen">
     <div class="register-hero">
       <span class="hero-emoji">🎉</span>
-      <h1 class="gradient-text">Bli med på festen!</h1>
-      <p>10 spørsmål · 15 sekunder per spørsmål · Svar raskt for makspoeng!</p>
+      <h1 class="gradient-text" data-i18n="heroHeading">Bli med på festen!</h1>
+      <p data-i18n="heroSubtitle">10 spørsmål · 15 sekunder per spørsmål · Svar raskt for makspoeng!</p>
     </div>
 
     <div class="register-card">
       <div class="ds-field">
-        <label class="ds-label" for="player-name-input">Navnet ditt</label>
+        <label class="ds-label" for="player-name-input" data-i18n="nameLabel">Navnet ditt</label>
         <input
           class="ds-input"
           type="text"
           id="player-name-input"
           placeholder="Trykk for å velge navn…"
+          data-i18n-placeholder="namePlaceholder"
           maxlength="30"
           readonly
         />
@@ -44,8 +48,8 @@
       <div id="register-error" class="error-msg hidden"></div>
     </div>
 
-    <a href="leaderboard-mobil.html" class="ds-button" data-variant="secondary" data-fullwidth id="btn-leaderboard-link">📊 Se resultattavlen</a>
-    <p class="register-note">Opptil 1 000 poeng per spørsmål — poengene teller ned fra 1 000 til 0</p>
+    <a href="leaderboard-mobil.html" class="ds-button" data-variant="secondary" data-fullwidth id="btn-leaderboard-link" data-i18n="leaderboardLink">📊 Se resultattavlen</a>
+    <p class="register-note" data-i18n="registerNote">Opptil 1 000 poeng per spørsmål — poengene teller ned fra 1 000 til 0</p>
   </section>
 
   <!-- ===== QUIZ ===== -->
@@ -80,23 +84,23 @@
   <section id="screen-results" class="screen">
     <div class="results-trophy">🏆</div>
     <div class="results-hero">
-      <h2>Quiz fullført!</h2>
+      <h2 data-i18n="quizDone">Quiz fullført!</h2>
       <div class="final-score gradient-text" id="final-score">0</div>
-      <div class="score-label">poeng</div>
+      <div class="score-label" data-i18n="scoreLabel">poeng</div>
     </div>
     <div id="high-score-msg" class="high-score-msg"></div>
     <div class="results-breakdown">
       <div class="breakdown-row">
-        <span class="label">Riktige svar</span>
+        <span class="label" data-i18n="correctAnswers">Riktige svar</span>
         <span class="value" id="correct-count">—</span>
       </div>
       <div class="breakdown-row">
-        <span class="label">Gj.snitt svartid</span>
+        <span class="label" data-i18n="avgTime">Gj.snitt svartid</span>
         <span class="value" id="avg-time">—</span>
       </div>
     </div>
-    <button id="btn-play-again" class="ds-button" data-fullwidth>Spill igjen →</button>
-    <button id="btn-view-leaderboard" class="ds-button" data-variant="secondary" data-fullwidth>Se resultattavlen →</button>
+    <button id="btn-play-again" class="ds-button" data-fullwidth data-i18n="playAgain">Spill igjen →</button>
+    <button id="btn-view-leaderboard" class="ds-button" data-variant="secondary" data-fullwidth data-i18n="viewLeaderboard">Se resultattavlen →</button>
     <p class="results-note" id="results-note"></p>
   </section>
 
@@ -113,6 +117,7 @@
       type="text"
       id="name-search-input"
       placeholder="Skriv inn navnet ditt…"
+      data-i18n-placeholder="searchPlaceholder"
       autocomplete="off"
       autocorrect="off"
       autocapitalize="words"
@@ -120,7 +125,7 @@
       maxlength="30"
     />
   </div>
-  <button id="btn-search-play" class="ds-button" data-fullwidth>La oss spille!</button>
+  <button id="btn-search-play" class="ds-button" data-fullwidth data-i18n="searchPlayBtn">La oss spille!</button>
   <div id="name-search-list"></div>
 </div>
 
@@ -128,8 +133,8 @@
 <div id="celebration-overlay" class="hidden">
   <div id="celebration-content">
     <div id="celebration-trophy">🥇</div>
-    <div id="celebration-title">Du leder nå!</div>
-    <div id="celebration-sub">Gratulerer — du er på toppen!</div>
+    <div id="celebration-title" data-i18n="celebrationTitle">Du leder nå!</div>
+    <div id="celebration-sub" data-i18n="celebrationSub">Gratulerer — du er på toppen!</div>
     <div id="celebration-score"></div>
   </div>
   <div id="confetti-container"></div>

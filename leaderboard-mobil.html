@@ -17,12 +17,15 @@
 
   <div id="mob-header">
     <span class="logo gradient-text">🎂 Birthday Games</span>
-    <a href="play.html" class="ds-button" data-variant="secondary" data-size="sm">Spill</a>
+    <div class="top-bar-right">
+      <button id="btn-lang-toggle" class="ds-button" data-variant="secondary" data-size="sm"></button>
+      <a href="play.html" class="ds-button" data-variant="secondary" data-size="sm" data-i18n="backToPlay">Spill</a>
+    </div>
   </div>
 
   <div id="tab-bar">
-    <button id="tab-quiz" class="tab-btn active">🧠 Quizpoeng</button>
-    <button id="tab-live" class="tab-btn">⚡ Livepoeng</button>
+    <button id="tab-quiz" class="tab-btn active" data-i18n="tabQuiz">🧠 Quizpoeng</button>
+    <button id="tab-live" class="tab-btn" data-i18n="tabLive">⚡ Livepoeng</button>
   </div>
 
   <!-- Quiz leaderboard panel -->
@@ -38,7 +41,7 @@
       <div id="mob-live-list"></div>
     </div>
     <div id="mob-teams-inner" class="hidden">
-      <div id="mob-teams-header">🏆 Lagoppsett</div>
+      <div id="mob-teams-header" data-i18n="teamsHeader">🏆 Lagoppsett</div>
       <div id="mob-team-grid"></div>
     </div>
   </div>

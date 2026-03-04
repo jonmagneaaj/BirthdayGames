@@ -192,7 +192,9 @@ body { min-height: 100vh; }
   border-radius: 6px; padding: 3px 7px;
   flex-shrink: 0; margin-top: 2px;
 }
-.question-card-text { flex: 1; font-size: 0.95rem; font-weight: 700; line-height: 1.45; }
+.question-card-text { font-size: 0.95rem; font-weight: 700; line-height: 1.45; }
+.question-card-texts { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.question-card-text-en { font-size: 0.8rem; color: var(--color-text-dim); font-weight: 600; line-height: 1.4; }
 
 .btn-delete-q {
   font-family: 'Nunito Sans', sans-serif;
@@ -219,6 +221,21 @@ body { min-height: 100vh; }
   color: #81c784; font-weight: 700;
 }
 .qa-item.correct-ans::before { content: "✓ "; }
+
+.question-answers-en { margin-top: 6px; opacity: 0.65; }
+.qa-item-en { font-style: italic; }
+
+/* ===== LANG DIVIDER (bilingual form) ===== */
+.lang-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 22px 0 18px;
+}
+.lang-section-label {
+  font-size: 0.72rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--color-text-dim); margin-bottom: 14px;
+}
 
 .list-loading, .list-empty {
   text-align: center; padding: 40px; color: var(--color-text-dim); font-size: 0.9rem;

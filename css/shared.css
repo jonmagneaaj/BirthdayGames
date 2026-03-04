@@ -244,6 +244,20 @@ html, body {
   word-break: break-all; line-height: 1.5;
 }
 
+/* ===== LANG TOGGLE (top bar) ===== */
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#btn-lang-toggle {
+  font-size: 0.82rem;
+  padding-block: 0.25rem;
+  padding-inline: 0.6rem;
+  min-height: 30px;
+  letter-spacing: 0.3px;
+}
+
 /* Error message */
 .error-msg {
   color: var(--ds-color-danger-text-default);

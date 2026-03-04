@@ -222,9 +222,11 @@ const inspirationIcon = document.getElementById("inspiration-icon");
 const btnRefresh = document.getElementById("btn-refresh-inspiration");
 
 const answersForm = document.getElementById("answers-form");
+const answersFormEn = document.getElementById("answers-form-en");
 const btnAddQuestion = document.getElementById("btn-add-question");
 const formStatus = document.getElementById("form-status");
 const questionInput = document.getElementById("question-input");
+const questionInputEn = document.getElementById("question-input-en");
 
 const questionsList = document.getElementById("questions-list");
 const questionCountBadge = document.getElementById("question-count-badge");
@@ -295,6 +297,15 @@ function renderAnswerInputs() {
     </div>
   `).join("");
 
+  if (answersFormEn) {
+    answersFormEn.innerHTML = Array.from({ length: selectedAnswerCount }, (_, i) => `
+      <div class="answer-row" data-index="${i}">
+        <span class="answer-row-label">${labels[i]}</span>
+        <input type="text" class="ds-input answer-input-en" placeholder="Answer ${labels[i]} (EN)…" data-index="${i}" />
+      </div>
+    `).join("");
+  }
+
   // Highlight correct input border
   updateCorrectHighlight();
 
@@ -320,11 +331,14 @@ function updateCorrectHighlight() {
 btnAddQuestion && btnAddQuestion.addEventListener("click", submitQuestion);
 
 async function submitQuestion() {
-  const questionText = questionInput ? questionInput.value.trim() : "";
+  const questionText   = questionInput   ? questionInput.value.trim()   : "";
+  const questionTextEn = questionInputEn ? questionInputEn.value.trim() : "";
   if (!questionText) { showFormStatus("Vennligst skriv inn et spørsmål.", "error"); return; }
 
-  const inputs = answersForm ? answersForm.querySelectorAll(".answer-input") : [];
-  const answers = Array.from(inputs).map((i) => i.value.trim());
+  const inputs   = answersForm   ? answersForm.querySelectorAll(".answer-input")    : [];
+  const inputsEn = answersFormEn ? answersFormEn.querySelectorAll(".answer-input-en") : [];
+  const answers   = Array.from(inputs).map((i) => i.value.trim());
+  const answersEn = Array.from(inputsEn).map((i) => i.value.trim());
 
   // Validate: need at least 2 non-empty answers
   const filledCount = answers.filter(Boolean).length;
@@ -334,7 +348,8 @@ async function submitQuestion() {
   if (!answers[selectedCorrect]) { showFormStatus("Det markerte riktige svaret kan ikke være tomt.", "error"); return; }
 
   // Remove trailing empty answers and adjust correct index
-  const filteredAnswers = answers.slice(0, selectedAnswerCount).filter(Boolean);
+  const filteredAnswers   = answers.slice(0, selectedAnswerCount).filter(Boolean);
+  const filteredAnswersEn = answersEn.slice(0, selectedAnswerCount);
 
   // Re-compute correct index based on filled answers
   const correctText = answers[selectedCorrect];
@@ -344,12 +359,17 @@ async function submitQuestion() {
   btnAddQuestion.textContent = "Saving…";
 
   try {
-    await addDoc(collection(db, "questions"), {
-      question: questionText,
-      answers: filteredAnswers,
-      correct: correctIdx,
+    const docPayload = {
+      question:  questionText,
+      answers:   filteredAnswers,
+      correct:   correctIdx,
       createdAt: serverTimestamp(),
-    });
+    };
+    if (questionTextEn) {
+      docPayload.question_en = questionTextEn;
+      docPayload.answers_en  = filteredAnswersEn;
+    }
+    await addDoc(collection(db, "questions"), docPayload);
 
     showFormStatus("Spørsmål lagt til!", "success");
     resetForm();
@@ -364,7 +384,8 @@ async function submitQuestion() {
 }
 
 function resetForm() {
-  if (questionInput) questionInput.value = "";
+  if (questionInput)   questionInput.value   = "";
+  if (questionInputEn) questionInputEn.value = "";
   selectedCorrect = 0;
   renderAnswerInputs();
 }
@@ -404,14 +425,23 @@ function renderQuestionsList() {
       `<div class="qa-item${i === q.correct ? " correct-ans" : ""}">${escapeHtml(ans)}</div>`
     ).join("");
 
+    const hasEn = q.question_en || (q.answers_en && q.answers_en.length);
+    const answersHtmlEn = hasEn ? (q.answers_en || []).map((ans, i) =>
+      `<div class="qa-item qa-item-en${i === q.correct ? " correct-ans" : ""}">${escapeHtml(ans)}</div>`
+    ).join("") : "";
+
     return `
       <div class="question-card" data-id="${q.id}">
         <div class="question-card-top">
           <span class="question-card-num">Q${idx + 1}</span>
-          <span class="question-card-text">${escapeHtml(q.question)}</span>
+          <div class="question-card-texts">
+            <span class="question-card-text">${escapeHtml(q.question)}</span>
+            ${hasEn ? `<span class="question-card-text-en">🇬🇧 ${escapeHtml(q.question_en || "")}</span>` : ""}
+          </div>
           <button class="btn-delete-q" data-id="${q.id}">Delete</button>
         </div>
         <div class="question-answers">${answersHtml}</div>
+        ${hasEn ? `<div class="question-answers question-answers-en">${answersHtmlEn}</div>` : ""}
       </div>`;
   }).join("");
 

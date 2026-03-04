@@ -1,3 +1,4 @@
+import { t, getLang, setLang, applyTranslations, tPlayerCount } from "./i18n.js";
 import { db } from "../firebase-config.js";
 import {
   collection,
@@ -73,13 +74,13 @@ function renderBoard(listEl, players, scoreField, prevMap, countEl) {
     listEl.innerHTML = `
       <div class="mob-empty">
         <div class="empty-icon">👀</div>
-        <p>Ingen spillere ennå.</p>
+        <p>${t("noPlayers")}</p>
       </div>`;
     if (countEl) countEl.textContent = "";
     return;
   }
 
-  if (countEl) countEl.textContent = `${players.length} spiller${players.length !== 1 ? "e" : ""}`;
+  if (countEl) countEl.textContent = tPlayerCount(players.length);
 
   listEl.innerHTML = players.map((player, idx) => {
     const rank = idx + 1;
@@ -111,7 +112,7 @@ function saveRanks(players, prevMap) {
 function showTeamMode(teams) {
   liveInnerEl.classList.add("hidden");
   teamsInnerEl.classList.remove("hidden");
-  tabLive.textContent = "🏆 Lagspill";
+  tabLive.textContent = t("tabTeams");
 
   if (!teamGridEl || !teams || teams.length === 0) return;
 
@@ -134,14 +135,16 @@ function showTeamMode(teams) {
 function showLiveMode() {
   teamsInnerEl.classList.add("hidden");
   liveInnerEl.classList.remove("hidden");
-  tabLive.textContent = "⚡ Livepoeng";
+  tabLive.textContent = t("tabLive");
 }
 
 // ===== TIMESTAMP =====
 function updateTimestamp() {
   if (!updatedEl) return;
   const now = new Date();
-  updatedEl.textContent = "Oppdatert " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const locale  = getLang() === "en" ? "en-GB" : "nb-NO";
+  const timeStr = now.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  updatedEl.textContent = t("updatedAt", { time: timeStr });
 }
 
 // ===== FIRESTORE LISTENERS =====
@@ -158,7 +161,7 @@ function startListening() {
     },
     (err) => {
       console.error("Quiz leaderboard error:", err);
-      if (quizListEl) quizListEl.innerHTML = `<div class="mob-empty"><p>Tilkoblingsfeil.</p></div>`;
+      if (quizListEl) quizListEl.innerHTML = `<div class="mob-empty"><p>${t("connectionError")}</p></div>`;
     }
   );
 
@@ -173,7 +176,7 @@ function startListening() {
     },
     (err) => {
       console.error("Live leaderboard error:", err);
-      if (liveListEl) liveListEl.innerHTML = `<div class="mob-empty"><p>Tilkoblingsfeil.</p></div>`;
+      if (liveListEl) liveListEl.innerHTML = `<div class="mob-empty"><p>${t("connectionError")}</p></div>`;
     }
   );
 
@@ -188,6 +191,17 @@ function startListening() {
   });
 }
 
+// ===== LANG TOGGLE =====
+function initLangToggle() {
+  const btn = document.getElementById("btn-lang-toggle");
+  if (!btn) return;
+  btn.textContent = getLang() === "no" ? "🇬🇧 EN" : "🇳🇴 NO";
+  btn.addEventListener("click", () => {
+    setLang(getLang() === "no" ? "en" : "no");
+    location.reload();
+  });
+}
+
 // ===== UTILS =====
 function escapeHtml(str) {
   return String(str)
@@ -199,5 +213,8 @@ function escapeHtml(str) {
 
 // ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
+  applyTranslations();
+  document.title = t("lbPageTitle");
+  initLangToggle();
   startListening();
 });
