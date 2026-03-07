@@ -2,6 +2,12 @@
 export const TRANSLATIONS = {
   no: {
     // --- play.html / quiz.js ---
+    pwHeading:          "Skriv inn koden",
+    pwSubtitle:         "Du trenger en invitasjonskode for å delta.",
+    pwLabel:            "Kode",
+    pwPlaceholder:      "Skriv inn koden…",
+    pwBtn:              "Kom inn!",
+    pwWrong:            "Feil kode — prøv igjen.",
     pageTitle:          "Birthday Games — Spill!",
     heroHeading:        "Bli med på festen!",
     heroSubtitle:       "10 spørsmål · 15 sekunder per spørsmål · Svar raskt for makspoeng!",
@@ -54,6 +60,12 @@ export const TRANSLATIONS = {
 
   en: {
     // --- play.html / quiz.js ---
+    pwHeading:          "Enter the code",
+    pwSubtitle:         "You need an invite code to join.",
+    pwLabel:            "Code",
+    pwPlaceholder:      "Enter the code…",
+    pwBtn:              "Let me in!",
+    pwWrong:            "Wrong code — try again.",
     pageTitle:          "Birthday Games — Play!",
     heroHeading:        "Join the party!",
     heroSubtitle:       "10 questions · 15 seconds per question · Answer fast for max points!",

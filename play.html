@@ -23,6 +23,31 @@
     </div>
   </div>
 
+  <!-- ===== PASSWORD ===== -->
+  <section id="screen-password" class="screen">
+    <div class="register-hero">
+      <span class="hero-emoji">🔒</span>
+      <h1 class="gradient-text" data-i18n="pwHeading">Skriv inn koden</h1>
+      <p data-i18n="pwSubtitle">Du trenger en invitasjonskode for å delta.</p>
+    </div>
+    <div class="register-card">
+      <div class="ds-field">
+        <label class="ds-label" for="pw-input" data-i18n="pwLabel">Kode</label>
+        <input
+          class="ds-input"
+          type="password"
+          id="pw-input"
+          data-i18n-placeholder="pwPlaceholder"
+          maxlength="30"
+          autocomplete="off"
+          autocorrect="off"
+        />
+      </div>
+      <button id="btn-pw-submit" class="ds-button" data-fullwidth data-i18n="pwBtn">Kom inn!</button>
+      <div id="pw-error" class="error-msg hidden"></div>
+    </div>
+  </section>
+
   <!-- ===== REGISTER ===== -->
   <section id="screen-register" class="screen">
     <div class="register-hero">

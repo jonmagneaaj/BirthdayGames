@@ -36,6 +36,7 @@ let allPlayers        = [];
 
 // ===== DOM REFS =====
 const screens = {
+  password: document.getElementById("screen-password"),
   register: document.getElementById("screen-register"),
   quiz:     document.getElementById("screen-quiz"),
   results:  document.getElementById("screen-results"),
@@ -61,6 +62,12 @@ const highScoreMsg     = document.getElementById("high-score-msg");
 const resultsNote      = document.getElementById("results-note");
 const btnViewLeaderboard = document.getElementById("btn-view-leaderboard");
 const btnPlayAgain     = document.getElementById("btn-play-again");
+
+// Password refs
+const pwInput     = document.getElementById("pw-input");
+const btnPwSubmit = document.getElementById("btn-pw-submit");
+const pwError     = document.getElementById("pw-error");
+const GAME_PASSWORD = "Jon";
 
 // Overlay refs
 const nameSearchOverlay = document.getElementById("name-search-overlay");
@@ -184,6 +191,31 @@ if (btnSearchPlay)  btnSearchPlay.addEventListener("click", confirmOverlay);
 if (nameSearchInput) {
   nameSearchInput.addEventListener("input",   () => renderOverlaySuggestions(nameSearchInput.value));
   nameSearchInput.addEventListener("keydown", (e) => { if (e.key === "Enter") confirmOverlay(); });
+}
+
+// ===== PASSWORD =====
+function handlePasswordSubmit() {
+  const val = pwInput ? pwInput.value : "";
+  if (val.toLowerCase() === GAME_PASSWORD.toLowerCase()) {
+    localStorage.setItem("bgPasswordOk", "1");
+    showScreen("register");
+  } else {
+    if (pwError) {
+      pwError.textContent = t("pwWrong");
+      pwError.classList.remove("hidden");
+    }
+    if (pwInput) {
+      pwInput.value = "";
+      pwInput.focus();
+    }
+  }
+}
+
+if (btnPwSubmit) {
+  btnPwSubmit.addEventListener("click", handlePasswordSubmit);
+}
+if (pwInput) {
+  pwInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handlePasswordSubmit(); });
 }
 
 // ===== SHUFFLE =====
@@ -573,6 +605,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   applyTranslations();
   document.title = t("pageTitle");
   initLangToggle();
-  showScreen("register");
+
+  if (localStorage.getItem("bgPasswordOk") === "1") {
+    showScreen("register");
+  } else {
+    showScreen("password");
+  }
+
   await Promise.all([loadQuestions(), loadExistingPlayers()]);
 });
